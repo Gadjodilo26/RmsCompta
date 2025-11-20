@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fiches contacts — Compta locale</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="page-transition.js" defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="site-header">
+        <img src="logoOfficielRMS.svg" alt="Logo" class="site-logo" />
+        <h1>Fiches clients</h1>
+        <p>Centralisez les fiches techniques par client et reliez-les aux devis/factures.</p>
+      </header>
+
+      <section class="meta-card">
+        <h2>Actions rapides</h2>
+        <div class="file-actions">
+          <a class="btn btn-primary" href="index.html">Retour tableau de bord</a>
+          <a class="btn btn-secondary" href="calendar.html" aria-label="Ouvrir l'agenda">
+            📅
+          </a>
+          <button class="btn btn-secondary" id="export-sheets">Exporter</button>
+          <label class="btn btn-secondary" for="import-sheets">Importer</label>
+          <input type="file" id="import-sheets" accept="application/json" hidden />
+        </div>
+      </section>
+
+      <section class="panel active">
+        <h2 class="day-title">Nouvelle fiche</h2>
+        <form id="sheet-form" class="entry-form">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Client</label>
+              <select id="sheet-client">
+                <option value="">Sélectionner un client</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Nom (si nouveau)</label>
+              <input type="text" id="sheet-client-name" placeholder="Nouveau client" />
+            </div>
+            <div class="form-field">
+              <label>Téléphone</label>
+              <input type="tel" id="sheet-client-phone" placeholder="+33..." />
+            </div>
+            <div class="form-field">
+              <label>Adresse</label>
+              <input type="text" id="sheet-client-address" placeholder="Rue, code postal, ville" />
+            </div>
+            <div class="form-field">
+              <label>Titre fiche</label>
+              <input type="text" id="sheet-title" required />
+            </div>
+            <div class="form-field">
+              <label>Date</label>
+              <input type="date" id="sheet-date" />
+            </div>
+            <div class="form-field">
+              <label>Heure</label>
+              <input type="time" id="sheet-time" />
+            </div>
+            <div class="form-field">
+              <label>Travaux / prestations</label>
+              <textarea id="sheet-notes" rows="3"></textarea>
+            </div>
+            <div class="form-field">
+              <label>Contacts / consignes</label>
+              <textarea id="sheet-extra" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Ajouter la fiche</button>
+            <button type="button" class="btn btn-secondary" id="reset-sheet">Effacer</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2 class="day-title">Fiches enregistrées</h2>
+        <div class="table-scroll">
+          <table class="timesheet">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Téléphone</th>
+                <th>Adresse</th>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Notes</th>
+                <th>Consignes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="sheet-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (() => {
+        const STORAGE_KEY = "comptaFiches";
+        const MAIN_STORAGE = "comptaLocaleTemplate";
+        const CALENDAR_STORAGE = "comptaCalendar";
+        let sheets = [];
+        let clients = [];
+
+        const uuid = () => `id-${Date.now().toString(16)}-${Math.floor(Math.random() * 10000)}`;
+
+        function loadMainState() {
+          try {
+            const raw = localStorage.getItem(MAIN_STORAGE);
+            if (!raw) return { contacts: { clients: [], fournisseurs: [] } };
+            const parsed = JSON.parse(raw);
+            return {
+              ...parsed,
+              contacts: {
+                clients: Array.isArray(parsed?.contacts?.clients) ? parsed.contacts.clients : [],
+                fournisseurs: Array.isArray(parsed?.contacts?.fournisseurs) ? parsed.contacts.fournisseurs : [],
+              },
+            };
+          } catch (e) {
+            return { contacts: { clients: [], fournisseurs: [] } };
+          }
+        }
+
+        function saveMainState(state) {
+          localStorage.setItem(MAIN_STORAGE, JSON.stringify(state));
+        }
+
+        function loadMainClients() {
+          const main = loadMainState();
+          clients = main.contacts.clients || [];
+        }
+
+        function loadSheets() {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            sheets = raw ? JSON.parse(raw) : [];
+          } catch (e) {
+            sheets = [];
+          }
+        }
+
+        function saveSheets() {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(sheets));
+          renderSheets();
+        }
+
+        function renderClientSelect() {
+          const select = document.getElementById("sheet-client");
+          if (!select) return;
+          const current = select.value;
+          select.innerHTML = '<option value=\"\">Sélectionner un client</option>';
+          clients.forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = c.name;
+            select.appendChild(opt);
+          });
+          select.value = current || "";
+        }
+
+        function resolveClientName(id) {
+          const found = clients.find((c) => c.id === id);
+          return found ? found.name : "";
+        }
+
+        function resolveClientPhone(id) {
+          const found = clients.find((c) => c.id === id);
+          return found ? found.phone || "" : "";
+        }
+
+        function resolveClientAddress(id) {
+          const found = clients.find((c) => c.id === id);
+          return found ? found.address || "" : "";
+        }
+
+        function renderSheets() {
+          const tbody = document.getElementById("sheet-body");
+          if (!tbody) return;
+          tbody.innerHTML = sheets
+            .map(
+              (s, index) => `
+              <tr data-index="${index}">
+                <td>${resolveClientName(s.clientId) || s.clientName || "-"}</td>
+                <td>${s.phone || resolveClientPhone(s.clientId) || ""}</td>
+                <td>${s.address || resolveClientAddress(s.clientId) || ""}</td>
+                <td>${s.title || "-"}</td>
+                <td>${s.date || "-"}</td>
+                <td>${s.notes || ""}</td>
+                <td>${s.extra || ""}</td>
+                <td><button class="table-link danger" data-action="delete">Supprimer</button></td>
+              </tr>
+            `
+            )
+            .join("");
+        }
+
+        function handleSubmit(e) {
+          e.preventDefault();
+          const title = document.getElementById("sheet-title").value.trim();
+          if (!title) return;
+          const selectedId = document.getElementById("sheet-client").value;
+          const newClientName = document.getElementById("sheet-client-name").value.trim();
+          const phone = document.getElementById("sheet-client-phone").value.trim();
+          const address = document.getElementById("sheet-client-address").value.trim();
+          const clientId =
+            selectedId || (newClientName ? upsertMainClient({ name: newClientName, phone, address }) : "");
+          if (selectedId && (phone || address)) {
+            updateMainClientById(selectedId, { phone, address });
+          }
+          sheets.push({
+            clientId,
+            clientName: newClientName || resolveClientName(clientId),
+            phone: phone || resolveClientPhone(clientId),
+            address: address || resolveClientAddress(clientId),
+            title,
+            date: document.getElementById("sheet-date").value,
+            time: document.getElementById("sheet-time").value,
+            notes: document.getElementById("sheet-notes").value,
+            extra: document.getElementById("sheet-extra").value,
+          });
+          saveSheets();
+          createCalendarEventFromSheet({
+            clientId,
+            title,
+            date: document.getElementById("sheet-date").value,
+            time: document.getElementById("sheet-time").value,
+            notes: document.getElementById("sheet-notes").value,
+          });
+          e.target.reset();
+          renderClientSelect();
+        }
+
+        function handleTableClick(e) {
+          if (e.target.dataset.action !== "delete") return;
+          const row = e.target.closest("tr");
+          const index = Number(row?.dataset.index);
+          if (!Number.isFinite(index)) return;
+          sheets.splice(index, 1);
+          saveSheets();
+        }
+
+        function exportSheets() {
+          const blob = new Blob([JSON.stringify(sheets, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "fiches-clients.json";
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+
+        function importSheets(file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+          try {
+            const imported = JSON.parse(reader.result);
+            if (Array.isArray(imported)) {
+              sheets = imported;
+              saveSheets();
+              renderClientSelect();
+            } else {
+              alert("Fichier invalide");
+            }
+          } catch (e) {
+            alert("Import impossible");
+          }
+          };
+          reader.readAsText(file);
+        }
+
+        document.getElementById("sheet-form").addEventListener("submit", handleSubmit);
+        document.getElementById("reset-sheet").addEventListener("click", () => {
+          document.getElementById("sheet-form").reset();
+        });
+        document.getElementById("sheet-body").addEventListener("click", handleTableClick);
+        document.getElementById("export-sheets").addEventListener("click", exportSheets);
+        document.getElementById("import-sheets").addEventListener("change", (e) => {
+          const f = e.target.files[0];
+          if (f) importSheets(f);
+          e.target.value = "";
+        });
+
+        loadMainClients();
+        loadSheets();
+        renderClientSelect();
+        renderSheets();
+
+        function upsertMainClient({ name, phone = "", address = "" }) {
+          const main = loadMainState();
+          const existing = (main.contacts.clients || []).find(
+            (c) => (c.name || "").toLowerCase() === name.toLowerCase()
+          );
+          if (existing) {
+            if (phone) existing.phone = phone;
+            if (address) existing.address = address;
+            saveMainState(main);
+            clients = main.contacts.clients;
+            return existing.id;
+          }
+          const newId = uuid();
+          const contact = { id: newId, name, phone, address, type: "client" };
+          main.contacts.clients.push(contact);
+          clients.push(contact);
+          saveMainState(main);
+          return newId;
+        }
+
+        function updateMainClientById(id, payload = {}) {
+          if (!id) return;
+          const main = loadMainState();
+          const existing = (main.contacts.clients || []).find((c) => c.id === id);
+          if (!existing) return;
+          if (payload.phone) existing.phone = payload.phone;
+          if (payload.address) existing.address = payload.address;
+          saveMainState(main);
+          clients = main.contacts.clients;
+        }
+
+        function createCalendarEventFromSheet(data) {
+          if (!data?.date) return;
+          try {
+            const raw = localStorage.getItem(CALENDAR_STORAGE);
+            const calendarEvents = raw ? JSON.parse(raw) : [];
+            calendarEvents.push({
+              title: data.title || "Rendez-vous",
+              date: data.date,
+              start: data.time || "",
+              end: "",
+              place: "",
+              clientId: data.clientId || "",
+              type: data.type || "RDV",
+              notes: data.notes || "",
+            });
+            localStorage.setItem(CALENDAR_STORAGE, JSON.stringify(calendarEvents));
+          } catch (e) {
+            console.warn("Impossible d'ajouter l'événement au calendrier.", e);
+          }
+        }
+      })();
+    </script>
+
+    <button class="quick-comm-btn" id="quick-comm-btn" aria-label="Contacts rapides">📞</button>
+    <div class="quick-comm-panel" id="quick-comm-panel">
+      <h3 style="margin: 4px 0 10px;">Contact rapide</h3>
+      <div class="form-field">
+        <label for="qc-contact">Contact</label>
+        <select id="qc-contact">
+          <option value="">Sélectionner</option>
+        </select>
+      </div>
+      <div class="quick-comm-row">
+        <div class="form-field">
+          <label for="qc-phone">Téléphone</label>
+          <input type="tel" id="qc-phone" />
+        </div>
+        <div class="form-field">
+          <label for="qc-email">Email</label>
+          <input type="email" id="qc-email" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="qc-message">Message (SMS / email)</label>
+        <textarea id="qc-message" rows="2" placeholder="Bonjour, ..."></textarea>
+      </div>
+      <div class="form-field">
+        <label for="qc-subject">Sujet (email)</label>
+        <input type="text" id="qc-subject" placeholder="Sujet" />
+      </div>
+      <div class="form-field">
+        <label for="qc-preset">Prérremplissage</label>
+        <select id="qc-preset">
+          <option value="">Choisir un modèle</option>
+          <option value="callback">Je vous rappelle</option>
+          <option value="first">Premier contact</option>
+          <option value="quote">Relance devis</option>
+          <option value="thankyou">Merci / clôture</option>
+          <option value="rdv-confirm">Confirmation rendez-vous</option>
+          <option value="rdv-reminder">Rappel rendez-vous</option>
+        </select>
+      </div>
+      <div class="quick-comm-actions">
+        <a id="qc-call" class="btn btn-primary" href="#" aria-disabled="true" title="Appeler">📞</a>
+        <a id="qc-sms" class="btn btn-secondary" href="#" aria-disabled="true" title="SMS">💬</a>
+        <a id="qc-mail" class="btn btn-secondary" href="#" aria-disabled="true" title="Email">✉️</a>
+      </div>
+    </div>
+
+    <script>
+      (() => {
+        const MAIN_STORAGE = "comptaLocaleTemplate";
+        let contacts = [];
+
+        function loadContacts() {
+          try {
+            const raw = localStorage.getItem(MAIN_STORAGE);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            contacts = [
+              ...(Array.isArray(parsed?.contacts?.clients) ? parsed.contacts.clients : []),
+              ...(Array.isArray(parsed?.contacts?.fournisseurs) ? parsed.contacts.fournisseurs : []),
+            ];
+          } catch (e) {
+            contacts = [];
+          }
+        }
+
+        function renderSelect() {
+          const select = document.getElementById("qc-contact");
+          if (!select) return;
+          const current = select.value;
+          select.innerHTML = '<option value=\"\">Sélectionner</option>';
+          contacts.forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = c.name || "Contact";
+            select.appendChild(opt);
+          });
+          select.value = current || "";
+          updateLinks();
+        }
+
+        function selected() {
+          const select = document.getElementById("qc-contact");
+          if (!select) return null;
+          return contacts.find((c) => c.id === select.value) || null;
+        }
+
+        function updateLinks() {
+          const contact = selected();
+          const phoneInput = document.getElementById("qc-phone");
+          const emailInput = document.getElementById("qc-email");
+          const msgInput = document.getElementById("qc-message");
+          const subjectInput = document.getElementById("qc-subject");
+          const presetSelect = document.getElementById("qc-preset");
+          const callLink = document.getElementById("qc-call");
+          const smsLink = document.getElementById("qc-sms");
+          const mailLink = document.getElementById("qc-mail");
+          const phone = (contact?.phone || phoneInput?.value || "").trim();
+          const email = (contact?.email || emailInput?.value || "").trim();
+          if (phoneInput) phoneInput.value = phone;
+          if (emailInput) emailInput.value = email;
+          if (presetSelect && presetSelect.value) {
+            const msg = getPresetText(presetSelect.value, contact);
+            if (msgInput) msgInput.value = msg;
+            if (presetSelect.value.includes("rdv") && subjectInput && !subjectInput.value) {
+              subjectInput.value = "Rendez-vous";
+            }
+          }
+          const message = msgInput?.value || "";
+          const subject = subjectInput?.value || "";
+          if (callLink) {
+            callLink.href = phone ? `tel:${phone}` : "#";
+            callLink.setAttribute("aria-disabled", phone ? "false" : "true");
+          }
+          if (smsLink) {
+            const body = encodeURIComponent(message);
+            smsLink.href = phone ? `sms:${phone}?&body=${body}` : "#";
+            smsLink.setAttribute("aria-disabled", phone ? "false" : "true");
+          }
+          if (mailLink) {
+            const mailSubject = encodeURIComponent(subject);
+            const mailBody = encodeURIComponent(message);
+            mailLink.href = email ? `mailto:${email}?subject=${mailSubject}&body=${mailBody}` : "#";
+            mailLink.setAttribute("aria-disabled", email ? "false" : "true");
+          }
+        }
+
+        function setup() {
+          const btn = document.getElementById("quick-comm-btn");
+          const panel = document.getElementById("quick-comm-panel");
+          if (btn && panel) {
+            btn.addEventListener("click", () => panel.classList.toggle("open"));
+          }
+          document.getElementById("qc-contact")?.addEventListener("change", updateLinks);
+          ["qc-phone", "qc-email", "qc-message", "qc-subject", "qc-preset"].forEach((id) => {
+            document.getElementById(id)?.addEventListener("input", updateLinks);
+          });
+          loadContacts();
+          renderSelect();
+        }
+
+        function getPresetText(key, contact) {
+          const rdv = findLatestRdv(contact?.id);
+          const rdvText = rdv ? formatRdv(rdv) : "";
+          const name = contact?.name || "";
+          const templates = {
+            callback: `Bonjour ${name}, je vous rappelle dès que possible.`,
+            first: `Bonjour ${name}, suite à votre demande, je reviens vers vous pour échanger.`,
+            quote: `Bonjour ${name}, avez-vous eu le temps de consulter le devis ? Je reste disponible.`,
+            thankyou: `Bonjour ${name}, merci pour votre confiance. N'hésitez pas si besoin.`,
+            "rdv-confirm": rdvText
+              ? `Bonjour ${name}, je confirme notre rendez-vous ${rdvText}.`
+              : `Bonjour ${name}, je confirme notre rendez-vous.`,
+            "rdv-reminder": rdvText
+              ? `Bonjour ${name}, petit rappel de notre rendez-vous ${rdvText}.`
+              : `Bonjour ${name}, je vous rappelle notre rendez-vous.`,
+          };
+          return templates[key] || "";
+        }
+
+        function findLatestRdv(contactId) {
+          if (!contactId) return null;
+          const sources = [];
+          try {
+            const calRaw = localStorage.getItem("comptaCalendar");
+            const cal = calRaw ? JSON.parse(calRaw) : [];
+            cal.filter((c) => c.clientId === contactId).forEach((c) => sources.push(c));
+          } catch (e) {}
+          try {
+            const ficheRaw = localStorage.getItem("comptaFiches");
+            const fiches = ficheRaw ? JSON.parse(ficheRaw) : [];
+            fiches
+              .filter((f) => f.clientId === contactId)
+              .forEach((f) => sources.push({ date: f.date, start: f.time, title: f.title }));
+          } catch (e) {}
+          const dated = sources.filter((s) => s.date);
+          if (!dated.length) return null;
+          dated.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+          return dated[dated.length - 1];
+        }
+
+        function formatRdv(ev) {
+          const d = new Date(ev.date);
+          const day = d.toLocaleDateString("fr-FR");
+          const time = ev.start ? ` à ${ev.start}` : "";
+          return `prévu le ${day}${time}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", setup);
+      })();
+    </script>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img id="footer-logo" src="logoOfficielRMS.svg" alt="Logo RMS" />
+          <div class="footer-texts">
+            <span id="footer-text">RMS Micro-entreprise — Compta locale</span>
+            <span id="footer-copy">© <script>document.write(new Date().getFullYear());</script> RMS Suite</span>
+          </div>
+        </div>
+        <div class="footer-legal">
+          <span>RMS Micro-entreprise, SIRET : 93338523900019, Art sur Meurthe 54510 | Hébergement : Kinsta sécurisé | Site statique, zéro collecte de données | HTTPS | Consulting à 20 €/h, web sur devis</span>
+          <a href="mentions-legales.html">Mentions légales</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mode d'emploi — Compta locale</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="page-transition.js" defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="site-header guide-hero">
+        <div class="guide-hero-text">
+          <p class="guide-hero-kicker">Guide express • RMS Suite</p>
+          <h1>Mode d'emploi ludique</h1>
+          <p class="guide-hero-sub">
+            Prenez en main la compta locale sans cloud : routes clés, astuces, et rappels importants pour éviter les oublis.
+          </p>
+          <div class="guide-pills">
+            <span class="guide-pill">Local-first (données privées)</span>
+            <span class="guide-pill">PWA installable</span>
+            <span class="guide-pill">Exports JSON</span>
+          </div>
+        </div>
+        <div class="guide-hero-badge">
+          <span>⚡️ Concentré</span>
+          <strong>5 min</strong>
+          <small>pour être opérationnel</small>
+        </div>
+      </header>
+
+      <section class="meta-card guide-section">
+        <div class="guide-section-header">
+          <h2>Principes clés</h2>
+          <p>Ce qu'il faut absolument retenir avant de commencer.</p>
+        </div>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <h3>Local-first & privé</h3>
+            <p>Vos données restent dans votre navigateur (localStorage). Rien n'est envoyé ailleurs par défaut.</p>
+            <div class="guide-callout success">Astuce : utilisez un navigateur à jour pour maximiser la stabilité du stockage.</div>
+          </div>
+          <div class="guide-card">
+            <h3>Exports & imports JSON</h3>
+            <p>Exportez et réimportez vos dossiers, pièces et contacts quand vous voulez.</p>
+            <div class="guide-callout warning">Important : gardez une copie des JSON et de vos pièces sur un support externe.</div>
+          </div>
+          <div class="guide-card">
+            <h3>Mode PWA</h3>
+            <p>Installez l'app sur ordinateur ou mobile via « Ajouter à l'écran d'accueil » pour une expérience quasi native.</p>
+            <div class="guide-callout info">Le service worker met en cache l'app : utilisable hors ligne après première visite.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="meta-card guide-section">
+        <div class="guide-section-header">
+          <h2>Parcours express</h2>
+          <p>6 étapes pour être prêt à comptabiliser.</p>
+        </div>
+        <ol class="guide-steps">
+          <li>
+            <strong>Renseignez votre dossier</strong> (nom, période, devise) dans <em>Informations du dossier</em>.
+          </li>
+          <li>
+            <strong>Ajoutez vos catégories</strong> de dépenses/moyens de paiement si besoin (section Dépenses).
+          </li>
+          <li>
+            <strong>Saisissez vos premiers contacts</strong> (Clients/Fournisseurs) pour accélérer la saisie.
+          </li>
+          <li>
+            <strong>Saisissez recettes et dépenses</strong> en liant les pièces justificatives si possible.
+          </li>
+          <li>
+            <strong>Générez vos devis/factures</strong> puis convertissez une facture payée en recette d'un clic.
+          </li>
+          <li>
+            <strong>Exportez en JSON</strong> régulièrement et stockez vos pièces hors ligne pour sauvegarder.
+          </li>
+        </ol>
+      </section>
+
+      <section class="meta-card guide-section">
+        <div class="guide-section-header">
+          <h2>Navigation et modules</h2>
+          <p>Chaque module a son rôle : repères rapides.</p>
+        </div>
+        <div class="guide-grid">
+          <div class="guide-card mini">
+            <h4>Tableau de bord</h4>
+            <p>Vue synthèse : solde, TVA, totaux. Filtrez par dates ou texte.</p>
+          </div>
+          <div class="guide-card mini">
+            <h4>Recettes / Dépenses</h4>
+            <p>Saisie détaillée HT/TVA/TTC, lien pièce, statut, paiement. Ajout dynamique de catégories.</p>
+          </div>
+          <div class="guide-card mini">
+            <h4>Clients & Fournisseurs</h4>
+            <p>Contacts enrichis (SIRET, adresse) réutilisés dans les formulaires et le calendrier.</p>
+          </div>
+          <div class="guide-card mini">
+            <h4>Pièces justificatives</h4>
+            <p>Upload, compression automatique, galerie locale, lien vers les écritures.</p>
+          </div>
+          <div class="guide-card mini">
+            <h4>Devis & Factures</h4>
+            <p>Lignes multiples, calculs automatiques, impression/PDF, conversion facture → recette.</p>
+          </div>
+          <div class="guide-card mini">
+            <h4>Agenda / Calendrier</h4>
+            <p>Événements par mois, liens avec contacts, rappel des dépenses planifiées.</p>
+          </div>
+          <div class="guide-card mini">
+            <h4>Micro-entreprise</h4>
+            <p>Calcul URSSAF selon activité (Ventes/BIC/Libéral), suivi des versements et solde.</p>
+          </div>
+          <div class="guide-card mini">
+            <h4>Export / Impression</h4>
+            <p>Export JSON complet, impression journal, signature PNG pour vos documents.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="meta-card guide-section">
+        <div class="guide-section-header">
+          <h2>Focus & rappels</h2>
+          <p>Les détails qui passent souvent à la trappe.</p>
+        </div>
+        <div class="guide-focus">
+          <div class="guide-focus-card">
+            <h4>Liens pièces ↔ écritures</h4>
+            <p>Indiquez le numéro de pièce dans vos recettes/dépenses pour retrouver l'image en un clic.</p>
+          </div>
+          <div class="guide-focus-card">
+            <h4>Conversion facture → recette</h4>
+            <p>Depuis Devis & factures, utilisez le bouton “Ajouter la facture aux recettes” pour éviter les doubles saisies.</p>
+          </div>
+          <div class="guide-focus-card">
+            <h4>Filtres intelligents</h4>
+            <p>Filtre texte accepte références, descriptions, tiers. Combinez avec la période active pour affiner.</p>
+          </div>
+          <div class="guide-focus-card">
+            <h4>Signatures & logos</h4>
+            <p>Chargez un PNG de signature pour vos exports ; définissez le logo entreprise pour les devis/factures.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="meta-card guide-section">
+        <div class="guide-section-header">
+          <h2>Sauvegardes & sécurité</h2>
+          <p>Ne perdez jamais vos données.</p>
+        </div>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <h3>Routine de sauvegarde</h3>
+            <ul class="guide-list">
+              <li>Exporter le JSON à chaque fin de mois.</li>
+              <li>Stocker les pièces justificatives compressées dans un dossier externe.</li>
+              <li>Conserver au moins une copie hors ligne (clé USB, disque).</li>
+            </ul>
+          </div>
+          <div class="guide-card">
+            <h3>Mises à jour & cache</h3>
+            <p>Le service worker maintient le cache. En cas de doute, rafraîchissez avec Ctrl/Cmd + Shift + R après un export.</p>
+            <div class="guide-callout warning">Ne videz pas le stockage sans sauvegarde préalable : vous perdriez les données locales.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="meta-card guide-section">
+        <div class="guide-section-header">
+          <h2>Aide & support</h2>
+          <p>Contact rapide pour tout besoin.</p>
+        </div>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <h3>Contact support</h3>
+            <p>Utilisez le module Support pour générer un email contextuel (bug, PWA, impression, export…).</p>
+          </div>
+          <div class="guide-card">
+            <h3>Check-list</h3>
+            <ul class="guide-list">
+              <li>Décrire le problème (page, action, message d’erreur).</li>
+              <li>Préciser support (mobile/tablette/PC) et navigateur.</li>
+              <li>Joindre l’export JSON si besoin d’assistance sur vos données.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="meta-card guide-section">
+        <div class="guide-cta">
+          <div>
+            <h3>Prêt à continuer ?</h3>
+            <p>Retournez au tableau de bord ou installez l'app en PWA pour l’avoir sous la main.</p>
+          </div>
+          <div class="guide-cta-actions">
+            <a class="btn btn-primary" href="index.html">Retour tableau de bord</a>
+            <a class="btn btn-secondary" href="index.html#pwa">Installer en PWA</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img id="footer-logo" src="logoOfficielRMS.svg" alt="Logo RMS" />
+          <div class="footer-texts">
+            <span id="footer-text">RMS Micro-entreprise — Compta locale</span>
+            <span id="footer-copy">© <script>document.write(new Date().getFullYear());</script> RMS Suite</span>
+          </div>
+        </div>
+        <div class="footer-legal">
+          <span>RMS Micro-entreprise, SIRET : 93338523900019, Art sur Meurthe 54510 | Hébergement : Kinsta sécurisé | Site statique, zéro collecte de données | HTTPS | Consulting à 20 €/h, web sur devis</span>
+          <a href="mentions-legales.html">Mentions légales</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

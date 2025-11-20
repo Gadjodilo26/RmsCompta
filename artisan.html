@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artisan digital — RMS Dev</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="page-transition.js" defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="site-header">
+        <img src="logoOfficielRMS.svg" alt="Logo" class="site-logo" />
+        <h1>Artisan digital & conseil low-cost</h1>
+        <p>
+          Sites statiques rapides, modules adaptés (paiement, prise de RDV) et accompagnement micro-entrepreneur.
+        </p>
+      </header>
+
+      <section class="meta-card">
+        <h2>Pourquoi des sites statiques&nbsp;?</h2>
+        <p>
+          Je conçois des sites légers, sécurisés et faciles à héberger. Pas de back-end lourd&nbsp;: moins de pannes, moins
+          de coûts. On peut y raccorder des modules de paiement ou de réservation adaptés à votre activité via consultation
+          téléphonique (prestation payante) afin de choisir l'intégration la plus simple et la plus rentable.
+        </p>
+        <div class="file-actions" style="margin-top:12px;">
+          <a class="btn btn-secondary" href="index.html">Retour tableau de bord</a>
+        </div>
+      </section>
+
+      <section class="panel active">
+        <h2 class="day-title">Offre “Site web accessible”</h2>
+        <div class="panel-content">
+          <ul>
+            <li>Conception statique bas prix (landing, vitrine, mini catalogue).</li>
+            <li>Base SEO propre (balises, performance, accessibilité).</li>
+            <li>Options : module de paiement / lien de paiement, prise de rendez-vous, formulaire de contact.</li>
+            <li>Hébergement simple (pages statiques) pour réduire les charges.</li>
+            <li>Support et évolution à la demande.</li>
+          </ul>
+          <div class="meta-card">
+            <strong>Storytelling</strong>
+            <p>
+              Micro-entrepreneur et utilisateur intensif de services digitaux, je développe mes propres applications pour
+              gérer ma micro-société (compta locale, agenda, facturation). J'applique la même approche pragmatique pour
+              vos sites&nbsp;: aller à l'essentiel, automatiser ce qui compte, et livrer vite.
+            </p>
+          </div>
+          <div class="meta-card">
+            <strong>Audit SEO et présence en ligne</strong>
+            <p>
+              Si vous avez déjà une présence digitale, je propose un audit SEO / visibilité en ligne gratuit pour
+              identifier des pistes rapides d'amélioration avant tout chantier.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel active">
+        <h2 class="day-title">Demande de site / prestation</h2>
+        <form id="artisan-form" class="entry-form">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Nom / société</label>
+              <input type="text" id="art-name" placeholder="Votre nom" />
+            </div>
+            <div class="form-field">
+              <label>Email</label>
+              <input type="email" id="art-email" placeholder="vous@exemple.fr" required />
+            </div>
+            <div class="form-field">
+              <label>Téléphone</label>
+              <input type="tel" id="art-phone" placeholder="+33..." />
+            </div>
+            <div class="form-field">
+              <label>Type de site</label>
+              <select id="art-type">
+                <option>Landing / one page</option>
+                <option>Vitrine multi-sections</option>
+                <option>Catalogue / portfolio</option>
+                <option>Blog statique</option>
+                <option>Refonte légère d'un site existant</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Budget estimé</label>
+              <select id="art-budget">
+                <option>&lt; 500 €</option>
+                <option>500 - 1 000 €</option>
+                <option>1 000 - 2 000 €</option>
+                <option>À discuter</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Options souhaitées</label>
+              <textarea
+                id="art-options"
+                rows="3"
+                placeholder="Paiement en ligne, lien de paiement, prise de RDV, formulaire, blog..."
+              ></textarea>
+            </div>
+            <div class="form-field">
+              <label>Délais / échéance</label>
+              <input type="text" id="art-deadline" placeholder="Ex : en 2 semaines, avant telle date" />
+            </div>
+            <div class="form-field">
+              <label>Références / style</label>
+              <textarea id="art-style" rows="2" placeholder="Sites que vous aimez, palette, ton éditorial..."></textarea>
+            </div>
+            <div class="form-field" style="grid-column: 1 / -1;">
+              <label>Contexte & objectifs</label>
+              <textarea
+                id="art-context"
+                rows="4"
+                placeholder="Votre activité, audience cible, objectifs du site (leads, prise de contact, paiement...)."
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" id="art-mailto">Envoyer ma demande</button>
+            <button type="button" class="btn btn-secondary" id="art-copy">Copier le mail</button>
+            <button type="reset" class="btn btn-secondary" id="art-reset">Réinitialiser</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel active">
+        <h2 class="day-title">Aperçu du message</h2>
+        <div class="panel-content">
+          <pre id="art-preview" style="white-space: pre-wrap; background:#f8fafc; padding:10px; border-radius:8px;"></pre>
+        </div>
+      </section>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <span id="footer-text">Compta locale — RMS Suite</span>
+        <img id="footer-logo" src="logo-footer-placeholder.svg" alt="Logo du partenaire" />
+      </div>
+    </footer>
+
+    <script>
+      (() => {
+        const TO = "contact@rms-dev.fr";
+        const subjectBase = "[RMS Dev] Demande site / accompagnement";
+        const els = {
+          name: document.getElementById("art-name"),
+          email: document.getElementById("art-email"),
+          phone: document.getElementById("art-phone"),
+          type: document.getElementById("art-type"),
+          budget: document.getElementById("art-budget"),
+          options: document.getElementById("art-options"),
+          deadline: document.getElementById("art-deadline"),
+          style: document.getElementById("art-style"),
+          context: document.getElementById("art-context"),
+          preview: document.getElementById("art-preview"),
+          mailto: document.getElementById("art-mailto"),
+          copy: document.getElementById("art-copy"),
+          reset: document.getElementById("art-reset"),
+        };
+
+        function buildMessage() {
+          const subject = `${subjectBase} - ${els.type.value || "Site"}`;
+          const body = `Bonjour,
+
+Je souhaite avancer sur un site statique accessible.
+- Nom / société : ${els.name.value || "non fourni"}
+- Email : ${els.email.value || "non fourni"}
+- Téléphone : ${els.phone.value || "non fourni"}
+- Type de site : ${els.type.value}
+- Budget estimé : ${els.budget.value}
+- Options : ${els.options.value || "à définir"}
+- Délais / échéance : ${els.deadline.value || "à préciser"}
+- Références / style : ${els.style.value || "à préciser"}
+
+Contexte & objectifs :
+${els.context.value || "à préciser"}
+
+Merci pour un retour rapide (ou créneau téléphonique si besoin — prestation de conseil possible).
+
+Bien cordialement,
+${els.name.value || ""}`;
+          return { subject, body };
+        }
+
+        function updatePreview() {
+          const { subject, body } = buildMessage();
+          els.preview.textContent = `À : ${TO}\nObjet : ${subject}\n\n${body}`;
+          const mailto = `mailto:${TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          els.mailto.dataset.href = mailto;
+        }
+
+        ["name", "email", "phone", "type", "budget", "options", "deadline", "style", "context"].forEach((key) => {
+          els[key].addEventListener("input", updatePreview);
+        });
+
+        els.mailto.addEventListener("click", () => {
+          const href = els.mailto.dataset.href;
+          if (href) window.location.href = href;
+        });
+
+        els.copy.addEventListener("click", async () => {
+          const { subject, body } = buildMessage();
+          const text = `À : ${TO}\nObjet : ${subject}\n\n${body}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            alert("Message copié.");
+          } catch (e) {
+            alert("Copie impossible automatiquement, veuillez copier l'aperçu.");
+          }
+        });
+
+        els.reset.addEventListener("click", () => {
+          setTimeout(updatePreview, 0);
+        });
+
+        updatePreview();
+      })();
+    </script>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img id="footer-logo" src="logoOfficielRMS.svg" alt="Logo RMS" />
+          <div class="footer-texts">
+            <span id="footer-text">RMS Micro-entreprise — Compta locale</span>
+            <span id="footer-copy">© <script>document.write(new Date().getFullYear());</script> RMS Suite</span>
+          </div>
+        </div>
+        <div class="footer-legal">
+          <span>RMS Micro-entreprise, SIRET : 93338523900019, Art sur Meurthe 54510 | Hébergement : Kinsta sécurisé | Site statique, zéro collecte de données | HTTPS | Consulting à 20 €/h, web sur devis</span>
+          <a href="mentions-legales.html">Mentions légales</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

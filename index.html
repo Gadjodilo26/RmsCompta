@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>Compta locale</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="page-transition.js" defer></script>
+    <script src="config.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <nav class="top-nav">
+        <div class="top-nav-brand">
+          <img src="logoOfficielRMS.svg" alt="Logo RMS" class="top-nav-logo" />
+          <span>RMS Suite</span>
+        </div>
+        <button class="top-nav-toggle" id="top-nav-toggle" aria-label="Ouvrir le menu">☰</button>
+        <div class="top-nav-links" id="top-nav-links">
+          <a href="#info-dossier">Logiciel comptable</a>
+          <a href="calendar.html">Calendrier</a>
+          <a href="contacts.html">Gérez vos contacts</a>
+          <a href="support.html">Contact support</a>
+          <a href="artisan.html">Offre services digitaux</a>
+          <a href="mode-emploi.html">Mode d'emploi</a>
+        </div>
+      </nav>
+      <div class="app-shell">
+        <aside class="sidebar" aria-label="Navigation application">
+          <div class="sidebar-header">
+            <span class="sidebar-chip">Vue PC & tablette</span>
+            <div>
+              <h3>Navigation compta</h3>
+              <p class="sidebar-subtitle">Accès rapide aux modules</p>
+            </div>
+          </div>
+          <div class="sidebar-nav" id="sidebar-nav">
+            <button type="button" class="sidebar-link active" data-target="dashboard">
+              <span aria-hidden="true">📊</span>
+              <span>Tableau de bord</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="recettes">
+              <span aria-hidden="true">💶</span>
+              <span>Recettes</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="depenses">
+              <span aria-hidden="true">💳</span>
+              <span>Dépenses</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="clients">
+              <span aria-hidden="true">🤝</span>
+              <span>Clients</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="fournisseurs">
+              <span aria-hidden="true">🏪</span>
+              <span>Fournisseurs</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="documents">
+              <span aria-hidden="true">🧾</span>
+              <span>Devis & factures</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="pieces">
+              <span aria-hidden="true">🧾</span>
+              <span>Pièces justificatives</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="calendrier">
+              <span aria-hidden="true">📅</span>
+              <span>Calendrier dépenses</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="micro">
+              <span aria-hidden="true">📈</span>
+              <span>Micro-entreprise</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="exports">
+              <span aria-hidden="true">🖨️</span>
+              <span>Exports & impression</span>
+            </button>
+          </div>
+          <div class="sidebar-footer">
+            <a class="sidebar-cta" href="support.html">Support & assistance</a>
+            <div class="sidebar-mini-links">
+              <a href="contacts.html">Contacts</a>
+              <a href="calendar.html">Agenda</a>
+              <a href="mode-emploi.html">Mode d'emploi</a>
+            </div>
+          </div>
+        </aside>
+
+        <div class="workspace">
+          <header class="site-header">
+            <div class="site-header-body">
+              <h1 id="app-title">Gestion comptable simplifiée</h1>
+              <p id="app-tagline">
+                Pensé pour les micro-entreprises : saisie rapide, stockage local, exports et impressions prêts pour vos obligations.
+              </p>
+            </div>
+            <div class="site-header-meta">
+              <p class="week-summary" id="week-summary">
+                Période active : du - au - — -
+              </p>
+              <div class="header-accent"></div>
+            </div>
+          </header>
+
+          <div class="pwa-install-container">
+            <button id="btn-install" class="btn-install" hidden>
+              <span aria-hidden="true">📲</span>
+              <span data-text-key="pwa.installButton">Ajouter à l’écran d’accueil</span>
+            </button>
+          </div>
+          <div id="ios-a2hs-hint" class="ios-a2hs-hint" hidden>
+            <button type="button" aria-label="Masquer le rappel" data-ios-hint-close>&times;</button>
+            <p data-rich-text-key="pwa.iosHint">
+              Pour ajouter cette compta sur votre écran d’accueil iPhone ou iPad,
+              ouvrez le menu Partager de Safari puis choisissez
+              « Sur l’écran d’accueil ».
+            </p>
+          </div>
+
+          <section class="meta-card collapsible-card">
+            <button
+              type="button"
+              class="collapsible-trigger"
+              data-collapse-target="collapse-organisation"
+            >
+              <span data-text-key="fileOrganization.title">Organisation des fichiers</span>
+              <span class="collapsible-icon" aria-hidden="true">▾</span>
+            </button>
+            <div class="collapsible-panel" id="collapse-organisation">
+              <p id="file-org-intro">
+                Rangez vos exports et pièces dans des sous-dossiers pour sécuriser vos sauvegardes locales ou partagées.
+              </p>
+              <ol id="file-org-steps" class="file-steps"></ol>
+              <div class="file-actions">
+                <a
+                  class="btn btn-secondary"
+                  id="file-structure-download"
+                  href="structure-recommandee.zip"
+                  download="structure-compta.zip"
+                  data-text-key="fileOrganization.downloadLabel"
+                >
+                  Télécharger la structure recommandée
+                </a>
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  id="open-file-manager"
+                  data-text-key="fileOrganization.openLabel"
+                >
+                  Ouvrir les fichiers téléchargés
+                </button>
+              </div>
+              <p class="file-reminder" id="file-reminder-text">
+                Astuce : nommez vos fichiers avec l'année et le mois (ex : compta-2024-04.json) pour garder l'historique clair.
+              </p>
+            </div>
+          </section>
+
+          <section class="meta-card" id="info-dossier">
+            <h2 data-text-key="generalInfo.title">Informations du dossier comptable</h2>
+            <div class="meta-grid">
+              <div class="form-field">
+                <label for="company-name">Nom de l'entreprise</label>
+                <input type="text" id="company-name" placeholder="Entreprise / micro" />
+              </div>
+              <div class="form-field">
+                <label for="dossier-title">Titre du dossier</label>
+                <input type="text" id="dossier-title" placeholder="Comptabilité 2024" />
+              </div>
+              <div class="form-field">
+                <label for="period-start">Période du</label>
+                <input type="date" id="period-start" />
+              </div>
+              <div class="form-field">
+                <label for="period-end">Au</label>
+                <input type="date" id="period-end" />
+              </div>
+              <div class="form-field">
+                <label for="currency">Devise</label>
+                <input type="text" id="currency" placeholder="EUR" />
+              </div>
+              <div class="form-field">
+                <label for="observations">Notes générales</label>
+                <textarea id="observations"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="meta-card">
+            <h2>Coordonnées entreprise</h2>
+            <div class="meta-grid">
+              <div class="form-field">
+                <label for="company-legal-name">Dénomination</label>
+                <input type="text" id="company-legal-name" placeholder="Raison sociale" />
+              </div>
+              <div class="form-field">
+                <label for="company-status">Statut juridique</label>
+                <input type="text" id="company-status" placeholder="SAS, SARL, Micro..." />
+              </div>
+              <div class="form-field">
+                <label for="company-siren">SIREN / SIRET</label>
+                <input type="text" id="company-siren" placeholder="123 456 789 00000" />
+              </div>
+              <div class="form-field">
+                <label for="company-vat">TVA intracom.</label>
+                <input type="text" id="company-vat" placeholder="FRXX..." />
+              </div>
+              <div class="form-field">
+                <label for="company-phone">Téléphone</label>
+                <input type="tel" id="company-phone" placeholder="+33..." />
+              </div>
+              <div class="form-field">
+                <label for="company-email">Email</label>
+                <input type="email" id="company-email" placeholder="contact@exemple.fr" />
+              </div>
+              <div class="form-field">
+                <label for="company-address">Adresse</label>
+                <textarea id="company-address" rows="2" placeholder="Rue, code postal, ville"></textarea>
+              </div>
+              <div class="form-field">
+                <label for="company-iban">IBAN</label>
+                <input type="text" id="company-iban" placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX" />
+              </div>
+              <div class="form-field">
+                <label for="company-logo">Logo</label>
+                <input type="file" id="company-logo" accept="image/png,image/jpeg" />
+                <div class="logo-preview-box">
+                  <img id="company-logo-preview" alt="Logo entreprise" />
+                </div>
+              </div>
+              <div class="form-field form-field-checkbox">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="company-micro-exempt" />
+                  <span>Micro-entreprise (TVA non applicable, art. 293 B du CGI)</span>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <nav class="tabs" aria-label="Navigation comptable">
+            <button class="active" data-target="dashboard" data-text-key="tabs.dashboard">Tableau de bord</button>
+            <button data-target="recettes" data-text-key="tabs.incomes">Recettes</button>
+            <button data-target="depenses" data-text-key="tabs.expenses">Dépenses</button>
+            <button data-target="clients" data-text-key="tabs.clients">Clients</button>
+            <button data-target="fournisseurs" data-text-key="tabs.fournisseurs">Fournisseurs</button>
+            <button data-target="pieces" data-text-key="tabs.pieces">Pièces justificatives</button>
+            <button data-target="documents">Devis & factures</button>
+            <button data-target="calendrier">Calendrier dépenses</button>
+            <button data-target="micro">Micro-entreprise</button>
+            <button data-target="exports" data-text-key="tabs.exports">Exports & impression</button>
+            <a class="btn icon-link" href="calendar.html" aria-label="Agenda">
+              📅
+            </a>
+            <a class="btn icon-link" href="contacts.html" aria-label="Fiches clients">
+              👤
+            </a>
+            <a class="btn icon-link" href="support.html" aria-label="Support">
+              🆘
+            </a>
+          </nav>
+
+          <main>
+        <section class="panel active" data-panel="dashboard">
+          <h2 class="day-title" data-text-key="tabs.dashboard">Tableau de bord</h2>
+          <div class="dashboard-grid">
+            <div class="stat-card">
+              <p>Total recettes</p>
+              <strong id="stat-income">0 €</strong>
+            </div>
+            <div class="stat-card">
+              <p>Total dépenses</p>
+              <strong id="stat-expense">0 €</strong>
+            </div>
+            <div class="stat-card">
+              <p>Solde</p>
+              <strong id="stat-balance">0 €</strong>
+            </div>
+            <div class="stat-card">
+              <p>TVA collectée</p>
+              <strong id="stat-tva">0 €</strong>
+            </div>
+          </div>
+          <div class="panel-content">
+            <div class="filter-bar">
+              <div class="form-field">
+                <label for="filter-start">Filtrer du</label>
+                <input type="date" id="filter-start" />
+              </div>
+              <div class="form-field">
+                <label for="filter-end">Au</label>
+                <input type="date" id="filter-end" />
+              </div>
+              <div class="form-field">
+                <label for="filter-text">Recherche</label>
+                <input type="text" id="filter-text" placeholder="Réf, description, tiers..." />
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="timesheet">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Réf.</th>
+                    <th>Tiers</th>
+                    <th>Catégorie</th>
+                    <th>HT</th>
+                    <th>TVA</th>
+                    <th>TTC</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="recettes">
+          <h2 class="day-title" data-text-key="tabs.incomes">Recettes</h2>
+          <div class="panel-content form-stack">
+            <div class="inline-actions">
+              <div class="form-field inline-field">
+                <label>Ajouter une catégorie</label>
+                <div class="row-inline">
+                  <input type="text" id="new-income-category" placeholder="Nouvelle catégorie" />
+                  <button type="button" class="btn btn-secondary" id="add-income-category">Ajouter</button>
+                </div>
+              </div>
+              <div class="form-field inline-field">
+                <label>Ajouter un moyen de paiement</label>
+                <div class="row-inline">
+                  <input type="text" id="new-income-payment-method" placeholder="Ex : Virement" />
+                  <button type="button" class="btn btn-secondary" id="add-income-payment">Ajouter</button>
+                </div>
+              </div>
+            </div>
+            <form id="income-form" class="entry-form" data-entry-type="income">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Date</label>
+                  <input type="date" data-field="date" required />
+                </div>
+                <div class="form-field">
+                  <label>N° pièce / facture</label>
+                  <input type="text" data-field="reference" placeholder="FAC-2024-001" />
+                </div>
+                <div class="form-field">
+                  <label>Client</label>
+                  <select data-field="contactId" data-contact-type="client">
+                    <option value="">Saisir manuellement</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Nom du client (si manuel)</label>
+                  <input type="text" data-field="fallbackContact" placeholder="Client direct" />
+                </div>
+                <div class="form-field">
+                  <label>Catégorie</label>
+                  <select data-field="category"></select>
+                </div>
+                <div class="form-field">
+                  <label>Nature d'activité</label>
+                  <select data-field="microActivity" id="income-activity-select"></select>
+                </div>
+                <div class="form-field">
+                  <label>Montant HT</label>
+                  <input type="number" step="0.01" min="0" data-field="amountHT" />
+                </div>
+                <div class="form-field">
+                  <label>TVA (%)</label>
+                  <select data-field="tvaRate"></select>
+                </div>
+                <div class="form-field">
+                  <label>Montant TTC</label>
+                  <input type="number" step="0.01" min="0" data-field="amountTTC" />
+                </div>
+                <div class="form-field">
+                  <label>Moyen de paiement</label>
+                  <select data-field="paymentMethod"></select>
+                </div>
+                <div class="form-field">
+                  <label>Statut</label>
+                  <select data-field="status"></select>
+                </div>
+                <div class="form-field">
+                  <label>Pièce justificative liée</label>
+                  <input type="text" data-field="pieceId" placeholder="N° de pièce" />
+                </div>
+                <div class="form-field">
+                  <label>Notes</label>
+                  <textarea data-field="notes" rows="2"></textarea>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Ajouter la recette</button>
+                <button type="button" class="btn btn-secondary" data-reset-form>Effacer</button>
+              </div>
+            </form>
+
+            <div class="table-scroll">
+              <table class="timesheet">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Réf.</th>
+                    <th>Client</th>
+                    <th>Catégorie</th>
+                    <th>HT</th>
+                    <th>TVA</th>
+                    <th>TTC</th>
+                    <th>Paiement</th>
+                    <th>Statut</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="income-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="depenses">
+          <h2 class="day-title" data-text-key="tabs.expenses">Dépenses</h2>
+          <div class="panel-content form-stack">
+            <div class="inline-actions">
+              <div class="form-field inline-field">
+                <label>Ajouter une catégorie</label>
+                <div class="row-inline">
+                  <input type="text" id="new-expense-category" placeholder="Nouvelle catégorie" />
+                  <button type="button" class="btn btn-secondary" id="add-expense-category">Ajouter</button>
+                </div>
+              </div>
+              <div class="form-field inline-field">
+                <label>Ajouter un moyen de paiement</label>
+                <div class="row-inline">
+                  <input type="text" id="new-payment-method" placeholder="Ex : Espèces" />
+                  <button type="button" class="btn btn-secondary" id="add-payment-method">Ajouter</button>
+                </div>
+              </div>
+            </div>
+            <form id="expense-form" class="entry-form" data-entry-type="expense">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Date</label>
+                  <input type="date" data-field="date" required />
+                </div>
+                <div class="form-field">
+                  <label>N° pièce / facture</label>
+                  <input type="text" data-field="reference" placeholder="ACH-2024-001" />
+                </div>
+                <div class="form-field">
+                  <label>Fournisseur</label>
+                  <select data-field="contactId" data-contact-type="fournisseur">
+                    <option value="">Saisir manuellement</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Nom du fournisseur (si manuel)</label>
+                  <input type="text" data-field="fallbackContact" placeholder="Commerce local" />
+                </div>
+                <div class="form-field">
+                  <label>Catégorie</label>
+                  <select data-field="category"></select>
+                </div>
+                <div class="form-field">
+                  <label>Montant HT</label>
+                  <input type="number" step="0.01" min="0" data-field="amountHT" />
+                </div>
+                <div class="form-field">
+                  <label>TVA (%)</label>
+                  <select data-field="tvaRate"></select>
+                </div>
+                <div class="form-field">
+                  <label>Montant TTC</label>
+                  <input type="number" step="0.01" min="0" data-field="amountTTC" />
+                </div>
+                <div class="form-field">
+                  <label>Moyen de paiement</label>
+                  <select data-field="paymentMethod"></select>
+                </div>
+                <div class="form-field">
+                  <label>Statut</label>
+                  <select data-field="status"></select>
+                </div>
+                <div class="form-field">
+                  <label>Pièce justificative liée</label>
+                  <input type="text" data-field="pieceId" placeholder="N° de pièce" />
+                </div>
+                <div class="form-field">
+                  <label>Notes</label>
+                  <textarea data-field="notes" rows="2"></textarea>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Ajouter la dépense</button>
+                <button type="button" class="btn btn-secondary" data-reset-form>Effacer</button>
+              </div>
+            </form>
+
+            <div class="table-scroll">
+              <table class="timesheet">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Réf.</th>
+                    <th>Fournisseur</th>
+                    <th>Catégorie</th>
+                    <th>HT</th>
+                    <th>TVA</th>
+                    <th>TTC</th>
+                    <th>Paiement</th>
+                    <th>Statut</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="expense-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="clients">
+          <h2 class="day-title" data-text-key="tabs.clients">Clients</h2>
+          <div class="panel-content form-stack">
+            <form id="client-form" class="contact-form" data-contact-type="client">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Nom</label>
+                  <input type="text" data-contact-field="name" required />
+                </div>
+                <div class="form-field">
+                  <label>Email</label>
+                  <input type="email" data-contact-field="email" />
+                </div>
+                <div class="form-field">
+                  <label>Téléphone</label>
+                  <input type="tel" data-contact-field="phone" />
+                </div>
+                <div class="form-field">
+                  <label>SIRET</label>
+                  <input type="text" data-contact-field="siret" />
+                </div>
+                <div class="form-field">
+                  <label>Adresse</label>
+                  <input type="text" data-contact-field="address" />
+                </div>
+                <div class="form-field">
+                  <label>Code postal</label>
+                  <input type="text" data-contact-field="zip" />
+                </div>
+                <div class="form-field">
+                  <label>Ville</label>
+                  <input type="text" data-contact-field="city" />
+                </div>
+                <div class="form-field">
+                  <label>Notes</label>
+                  <textarea data-contact-field="notes" rows="2"></textarea>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Ajouter le client</button>
+                <button type="button" class="btn btn-secondary" data-reset-form>Effacer</button>
+              </div>
+            </form>
+
+            <div class="contact-list" id="client-list"></div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="fournisseurs">
+          <h2 class="day-title" data-text-key="tabs.fournisseurs">Fournisseurs</h2>
+            <div class="panel-content form-stack">
+              <form id="fournisseur-form" class="contact-form" data-contact-type="fournisseur">
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label>Nom</label>
+                    <input type="text" data-contact-field="name" required />
+                  </div>
+                  <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" data-contact-field="email" />
+                  </div>
+                  <div class="form-field">
+                    <label>Téléphone</label>
+                    <input type="tel" data-contact-field="phone" />
+                  </div>
+                  <div class="form-field">
+                    <label>SIRET</label>
+                    <input type="text" data-contact-field="siret" />
+                  </div>
+                  <div class="form-field">
+                    <label>Adresse</label>
+                    <input type="text" data-contact-field="address" />
+                  </div>
+                  <div class="form-field">
+                    <label>Code postal</label>
+                    <input type="text" data-contact-field="zip" />
+                  </div>
+                  <div class="form-field">
+                    <label>Ville</label>
+                    <input type="text" data-contact-field="city" />
+                  </div>
+                  <div class="form-field">
+                    <label>Notes</label>
+                    <textarea data-contact-field="notes" rows="2"></textarea>
+                  </div>
+                </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Ajouter le fournisseur</button>
+                <button type="button" class="btn btn-secondary" data-reset-form>Effacer</button>
+              </div>
+            </form>
+
+            <div class="contact-list" id="fournisseur-list"></div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="pieces">
+          <h2 class="day-title" data-text-key="tabs.pieces">Pièces justificatives</h2>
+          <div class="panel-content">
+            <p class="fuel-info">
+              Importez vos factures, tickets ou reçus. Les images sont compressées pour rester légères dans le stockage local.
+            </p>
+            <div class="fuel-actions">
+              <button class="btn btn-primary" type="button" id="print-fuel" data-text-key="buttons.printFuel">
+                Imprimer les pièces
+              </button>
+              <button class="btn btn-secondary" type="button" id="toggle-piece-preview">
+                Afficher l'aperçu des pièces
+              </button>
+            </div>
+            <form id="piece-form" class="entry-form piece-form">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Date de la pièce</label>
+                  <input type="date" id="piece-date" required />
+                </div>
+                <div class="form-field">
+                  <label>N° de pièce / facture</label>
+                  <input type="text" id="piece-ref" placeholder="FAC-2024-002" />
+                </div>
+                <div class="form-field">
+                  <label>Montant TTC</label>
+                  <input type="number" step="0.01" min="0" id="piece-amount" />
+                </div>
+                <div class="form-field">
+                  <label>Écriture liée (référence)</label>
+                  <input type="text" id="piece-linked-entry" placeholder="FAC-2024-001" />
+                </div>
+                <div class="form-field">
+                  <label>Importer la pièce</label>
+                  <input type="file" id="piece-image" accept="image/png,image/jpeg" />
+                </div>
+                <div class="form-field">
+                  <label>Notes</label>
+                  <textarea id="piece-notes" rows="2"></textarea>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Ajouter la pièce</button>
+                <button type="button" class="btn btn-secondary" data-reset-form>Effacer</button>
+              </div>
+            </form>
+
+            <div class="fuel-preview-wrapper" id="piece-preview-wrapper" hidden>
+              <h3>Aperçu des pièces</h3>
+              <div class="fuel-preview-grid" id="piece-preview-grid"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="documents">
+          <h2 class="day-title">Devis & factures</h2>
+          <div class="panel-content form-stack">
+            <form id="doc-form" class="entry-form">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Type</label>
+                  <select id="doc-type">
+                    <option value="devis">Devis</option>
+                    <option value="facture">Facture</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>N° document</label>
+                  <input type="text" id="doc-number" placeholder="DEV-2024-001" />
+                </div>
+                <div class="form-field">
+                  <label>Date</label>
+                  <input type="date" id="doc-date" />
+                </div>
+                <div class="form-field">
+                  <label>Échéance / validité</label>
+                  <input type="date" id="doc-due" />
+                </div>
+                <div class="form-field">
+                  <label>Client</label>
+                  <select id="doc-client">
+                    <option value="">Saisir manuellement</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Nom client (manuel)</label>
+                  <input type="text" id="doc-client-free" />
+                </div>
+                <div class="form-field">
+                  <label>Nature d'activité (URSSAF)</label>
+                  <select id="doc-activity">
+                    <option value="ventes">Ventes / commerce</option>
+                    <option value="bic">Prestations artisanales (BIC)</option>
+                    <option value="liberal">Libéral / BNC</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Statut</label>
+                  <select id="doc-status"></select>
+                </div>
+                <div class="form-field">
+                  <label>Moyen de paiement</label>
+                  <select id="doc-payment"></select>
+                </div>
+                <div class="form-field">
+                  <label>Acompte demandé (%)</label>
+                  <input type="number" step="0.1" min="0" max="100" id="doc-deposit-percent" placeholder="Ex : 30" />
+                  <small>Pour un devis : pourcentage demandé avant travaux</small>
+                </div>
+                <div class="form-field">
+                  <label>Acompte versé (€)</label>
+                  <input type="number" step="0.01" min="0" id="doc-deposit-paid" placeholder="Ex : 500" />
+                  <small>Pour une facture : montant déjà réglé</small>
+                </div>
+                <div class="form-field">
+                  <label>Notes</label>
+                  <textarea id="doc-notes" rows="2"></textarea>
+                </div>
+              </div>
+              <div class="doc-lines">
+                <div class="doc-lines-header">
+                  <strong>Lignes</strong>
+                  <button type="button" class="btn btn-secondary" id="add-doc-line">Ajouter une ligne</button>
+                </div>
+                <div id="doc-lines-container"></div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Enregistrer le document</button>
+                <button type="button" class="btn btn-secondary" id="doc-add-to-incomes">Ajouter la facture aux recettes</button>
+                <button type="button" class="btn btn-secondary" id="doc-reset">Effacer</button>
+              </div>
+            </form>
+
+            <div class="table-scroll">
+              <table class="timesheet">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>N°</th>
+                    <th>Date</th>
+                  <th>Client</th>
+                  <th>Statut</th>
+                  <th>Payé ?</th>
+                  <th>HT</th>
+                  <th>TVA</th>
+                  <th>TTC</th>
+                  <th></th>
+                </tr>
+                </thead>
+                <tbody id="doc-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="preview-wrapper" id="doc-preview">
+              <div class="preview-header doc-preview-header">
+                <img id="doc-logo" alt="Logo entreprise" />
+              <div class="doc-header-meta">
+                <div class="doc-title" id="doc-preview-type">Devis / Facture</div>
+                <div class="doc-number" id="doc-preview-number">-</div>
+                <div class="doc-dates">
+                  <span id="doc-preview-date">-</span>
+                  <span id="doc-preview-due">-</span>
+                </div>
+              </div>
+            </div>
+            <div class="doc-meta-grid">
+                <div class="doc-company-info">
+                  <strong id="doc-company-name">Entreprise</strong>
+                  <div id="doc-company-status"></div>
+                  <div id="doc-company-address"></div>
+                  <div id="doc-company-siren"></div>
+                  <div id="doc-company-vat"></div>
+                  <div id="doc-company-iban"></div>
+                  <div id="doc-company-contact"></div>
+                </div>
+              <div class="doc-client-info">
+                <strong>Client</strong>
+                <div id="doc-preview-client">-</div>
+              </div>
+            </div>
+              <div class="doc-legal" id="doc-micro-mention" hidden>
+                TVA non applicable, art. 293 B du CGI.
+              </div>
+              <div class="doc-legal" id="doc-deposit-block" hidden></div>
+              <div class="table-scroll">
+                <table class="timesheet">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                      <th>Qté</th>
+                      <th>PU HT</th>
+                      <th>TVA</th>
+                      <th>Total HT</th>
+                      <th>Total TTC</th>
+                    </tr>
+                  </thead>
+                  <tbody id="doc-preview-body"></tbody>
+                  <tfoot>
+                    <tr>
+                      <th colspan="4">Totaux</th>
+                      <td id="doc-preview-ht">0 €</td>
+                      <td id="doc-preview-ttc">0 €</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="print-doc">Imprimer le document</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="calendrier">
+          <h2 class="day-title">Calendrier des dépenses</h2>
+          <div class="panel-content">
+            <div class="form-field">
+              <label>Mois</label>
+              <input type="month" id="expense-month" />
+            </div>
+            <div class="calendar-legend">
+              <span class="legend income">Recettes</span>
+              <span class="legend expense">Dépenses</span>
+            </div>
+            <div class="calendar-grid" id="expense-calendar"></div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="micro">
+          <h2 class="day-title">Micro-entreprise</h2>
+          <div class="panel-content">
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Chiffre d'affaires HT</label>
+                <input type="number" step="0.01" min="0" id="micro-turnover" />
+              </div>
+            </div>
+            <div class="dashboard-grid">
+              <div class="stat-card">
+                <p>URSSAF estimée</p>
+                <strong id="micro-due">0 €</strong>
+              </div>
+              <div class="stat-card">
+                <p>Net après cotisations</p>
+                <strong id="micro-net">0 €</strong>
+              </div>
+              <div class="stat-card">
+                <p>Versements déclarés</p>
+                <strong id="micro-paid">0 €</strong>
+              </div>
+              <div class="stat-card">
+                <p>Solde à payer</p>
+                <strong id="micro-balance">0 €</strong>
+              </div>
+            </div>
+            <div class="micro-breakdown" id="micro-activity-breakdown"></div>
+
+            <form id="micro-payment-form" class="entry-form">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Date du versement</label>
+                  <input type="date" id="micro-pay-date" />
+                </div>
+                <div class="form-field">
+                  <label>Montant versé</label>
+                  <input type="number" step="0.01" min="0" id="micro-pay-amount" />
+                </div>
+                <div class="form-field">
+                  <label>Notes</label>
+                  <input type="text" id="micro-pay-notes" placeholder="Trimestre, acompte..." />
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Enregistrer le versement</button>
+                <button type="button" class="btn btn-secondary" id="micro-pay-reset">Effacer</button>
+              </div>
+            </form>
+
+            <div class="table-scroll">
+              <table class="timesheet">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Notes</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="micro-pay-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel preview-panel" data-panel="exports">
+          <h2 class="day-title" data-text-key="preview.title">Journal comptable & sauvegarde</h2>
+          <div class="preview-controls">
+            <div class="form-field">
+              <label for="signature-input">Signature (PNG)</label>
+              <input type="file" id="signature-input" accept="image/png" />
+            </div>
+            <div class="form-field">
+              <label class="sr-only" for="import-input">Importer un dossier</label>
+              <button
+                class="btn btn-secondary btn-load"
+                id="import-button"
+                type="button"
+                data-text-key="buttons.load"
+              >
+                Importer un dossier
+              </button>
+              <input type="file" id="import-input" accept="application/json" hidden />
+            </div>
+            <div class="form-field">
+              <label class="sr-only" for="export-data">Exporter</label>
+              <button
+                class="btn btn-secondary btn-save"
+                id="export-data"
+                type="button"
+                data-text-key="buttons.save"
+              >
+                Exporter en JSON
+              </button>
+            </div>
+            <div class="form-field">
+              <label class="sr-only" for="reset-data">Réinitialiser</label>
+              <button
+                class="btn btn-secondary"
+                id="reset-data"
+                type="button"
+                data-text-key="buttons.reset"
+              >
+                Réinitialiser le dossier
+              </button>
+            </div>
+            <div class="form-field">
+              <label class="sr-only" for="print-week">Imprimer</label>
+              <button class="btn btn-primary" id="print-week" type="button" data-text-key="buttons.printWeek">
+                Imprimer le journal
+              </button>
+            </div>
+          </div>
+
+          <div class="preview-wrapper" id="printable-area">
+            <div class="preview-header">
+              <img id="logo-preview" alt="Logo entreprise" />
+              <div class="preview-meta">
+                <span>Période : <strong id="preview-period">-</strong></span>
+                <span>Dossier : <strong id="preview-dossier">-</strong></span>
+              </div>
+            </div>
+              <div class="employee-banner">
+                <span>Entreprise : <strong id="preview-company">-</strong></span>
+              </div>
+              <div class="doc-legal" id="preview-iban" hidden></div>
+
+              <div class="table-scroll">
+              <table class="timesheet">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Réf.</th>
+                    <th>Tiers</th>
+                    <th>Catégorie</th>
+                    <th>HT</th>
+                    <th>TVA</th>
+                    <th>TTC</th>
+                    <th>Paiement</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody id="preview-body"></tbody>
+                <tfoot>
+                  <tr class="weekly-total-row">
+                    <th colspan="5">Totaux</th>
+                    <td id="preview-total-ht">0 €</td>
+                    <td id="preview-total-tva">0 €</td>
+                    <td id="preview-total-ttc">0 €</td>
+                    <td colspan="2" id="preview-total-balance">Solde : 0 €</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="post-table-grid">
+              <div class="notes-field">
+                <strong>Notes :</strong>
+                <p id="preview-observations">-</p>
+              </div>
+              <div class="signature-box">
+                <strong>Signature</strong>
+                <div>
+                  <img id="preview-signature" alt="Signature" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="meta-card">
+          <div class="file-actions shortcuts-row">
+            <a class="btn icon-link" href="calendar.html" aria-label="Agenda / événements">📅</a>
+            <a class="btn icon-link" href="contacts.html" aria-label="Fiches clients">👤</a>
+            <a class="btn icon-link" href="support.html" aria-label="Support et assistance">🆘</a>
+            <a class="btn icon-link" href="artisan.html" aria-label="Offre services digitaux">💻</a>
+            <a class="btn icon-link" href="mode-emploi.html" aria-label="Mode d'emploi">📖</a>
+          </div>
+        </section>
+
+        <section class="meta-card promo-banner">
+          <div>
+            <h3>Sites web accessibles !</h3>
+            <p>
+              Artisan digital & conseil low-cost : sites statiques rapides, modules paiement/RDV et audit SEO offert.
+              J'applique la même méthode lean que pour mes apps de gestion micro-entreprise.
+            </p>
+          </div>
+          <a class="btn" href="artisan.html">Découvrir l'offre</a>
+        </section>
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="page-transition" id="page-transition"></div>
+
+    <button class="quick-comm-btn" id="quick-comm-btn" aria-label="Contacts rapides">📞</button>
+    <div class="quick-comm-panel" id="quick-comm-panel">
+      <h3 style="margin: 4px 0 10px;">Contact rapide</h3>
+      <div class="form-field">
+        <label for="qc-contact">Contact</label>
+        <select id="qc-contact">
+          <option value="">Sélectionner</option>
+        </select>
+      </div>
+      <div class="quick-comm-row">
+        <div class="form-field">
+          <label for="qc-phone">Téléphone</label>
+          <input type="tel" id="qc-phone" />
+        </div>
+        <div class="form-field">
+          <label for="qc-email">Email</label>
+          <input type="email" id="qc-email" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="qc-message">Message (SMS / email)</label>
+        <textarea id="qc-message" rows="2" placeholder="Bonjour, ..."></textarea>
+      </div>
+      <div class="form-field">
+        <label for="qc-subject">Sujet (email)</label>
+        <input type="text" id="qc-subject" placeholder="Sujet" />
+      </div>
+      <div class="form-field">
+        <label for="qc-preset">Prérremplissage</label>
+        <select id="qc-preset">
+          <option value="">Choisir un modèle</option>
+          <option value="callback">Je vous rappelle</option>
+          <option value="first">Premier contact</option>
+          <option value="quote">Relance devis</option>
+          <option value="thankyou">Merci / clôture</option>
+          <option value="rdv-confirm">Confirmation rendez-vous</option>
+          <option value="rdv-reminder">Rappel rendez-vous</option>
+        </select>
+      </div>
+      <div class="quick-comm-actions">
+        <a id="qc-call" class="btn btn-primary" href="#" aria-disabled="true" title="Appeler">📞</a>
+        <a id="qc-sms" class="btn btn-secondary" href="#" aria-disabled="true" title="SMS">💬</a>
+        <a id="qc-mail" class="btn btn-secondary" href="#" aria-disabled="true" title="Email">✉️</a>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img id="footer-logo" src="logoOfficielRMS.svg" alt="Logo RMS" />
+          <div class="footer-texts">
+            <span id="footer-text">RMS Micro-entreprise — Compta locale</span>
+            <span id="footer-copyright">© <span id="footer-year"></span> RMS Suite</span>
+          </div>
+        </div>
+        <div class="footer-legal">
+          <span>RMS Micro-entreprise, SIRET : 93338523900019, Art sur Meurthe 54510 | Hébergement : Kinsta sécurisé | Site statique, zéro collecte de données | HTTPS | Consulting à 20 €/h, web sur devis</span>
+          <a href="mentions-legales.html">Mentions légales</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

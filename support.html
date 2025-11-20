@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support — Compta locale</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="page-transition.js" defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="site-header">
+        <img src="logoOfficielRMS.svg" alt="Logo" class="site-logo" />
+        <h1>Support & assistance</h1>
+        <p>Préparez un email structuré pour l'équipe support (support@rms-suite.com).</p>
+      </header>
+
+      <section class="meta-card">
+        <h2>Actions rapides</h2>
+        <div class="file-actions">
+          <a class="btn btn-primary" href="index.html">Retour tableau de bord</a>
+        </div>
+      </section>
+
+      <section class="panel active">
+        <h2 class="day-title">Formulaire de demande</h2>
+        <form id="support-form" class="entry-form">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Nom / société</label>
+              <input type="text" id="sup-name" placeholder="Votre nom" />
+            </div>
+            <div class="form-field">
+              <label>Email de contact</label>
+              <input type="email" id="sup-email" placeholder="vous@exemple.fr" />
+            </div>
+            <div class="form-field">
+              <label>Téléphone (optionnel)</label>
+              <input type="tel" id="sup-phone" placeholder="+33..." />
+            </div>
+            <div class="form-field">
+              <label>Appareil / navigateur</label>
+              <input type="text" id="sup-device" placeholder="Ex : iPhone 13 - Safari" />
+            </div>
+            <div class="form-field">
+              <label>Page / module concerné</label>
+              <select id="sup-page">
+                <option value="">Choisir</option>
+                <option>Tableau de bord</option>
+                <option>Recettes</option>
+                <option>Dépenses</option>
+                <option>Clients / Fournisseurs</option>
+                <option>Devis & factures</option>
+                <option>Pièces justificatives</option>
+                <option>Calendrier / Agenda</option>
+                <option>Micro-entreprise</option>
+                <option>Exports / impression</option>
+                <option>Installation PWA</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Type de demande</label>
+              <select id="sup-preset" required>
+                <option value="">Sélectionner un modèle</option>
+                <option value="bug">Bug / erreur technique</option>
+                <option value="usage">Aide à l'utilisation</option>
+                <option value="pwa">Installation PWA / écran d'accueil</option>
+                <option value="export">Export / import / sauvegarde</option>
+                <option value="print">Impression devis/facture ou journal</option>
+                <option value="calendar">Calendrier / fiches rendez-vous</option>
+                <option value="micro">Calcul micro-entreprise / URSSAF</option>
+                <option value="data">Données manquantes ou effacées</option>
+                <option value="feature">Suggestion / évolution</option>
+              </select>
+            </div>
+          <div class="form-field">
+            <label>Objet du mail</label>
+            <input type="text" id="sup-subject" placeholder="Objet généré automatiquement" />
+          </div>
+          <div class="form-field" style="grid-column: 1 / -1;">
+              <label>Description / détails</label>
+              <textarea
+                id="sup-details"
+                rows="6"
+                placeholder="Décrivez le contexte, les étapes pour reproduire, l'heure, ce que vous attendiez..."
+              ></textarea>
+            </div>
+          </div>
+        <div class="form-actions">
+          <button id="sup-mailto" type="button" class="btn btn-primary">Ouvrir l'email</button>
+          <button id="sup-copy" type="button" class="btn btn-secondary">Copier le message</button>
+          <button id="sup-reset" type="button" class="btn btn-secondary">Réinitialiser</button>
+        </div>
+      </form>
+      </section>
+
+      <section class="panel">
+        <h2 class="day-title">Aperçu du message</h2>
+        <div class="panel-content">
+          <pre id="sup-preview" style="white-space: pre-wrap; background:#f8fafc; padding:10px; border-radius:8px;"></pre>
+        </div>
+      </section>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img id="footer-logo" src="logoOfficielRMS.svg" alt="Logo RMS" />
+          <div class="footer-texts">
+            <span id="footer-text">RMS Micro-entreprise — Compta locale</span>
+            <span id="footer-copy">© <script>document.write(new Date().getFullYear());</script> RMS Suite</span>
+          </div>
+        </div>
+        <div class="footer-legal">
+          <span>RMS Micro-entreprise, SIRET : 93338523900019, Art sur Meurthe 54510 | Hébergement : Kinsta sécurisé | Site statique, zéro collecte de données | HTTPS | Consulting à 20 €/h, web sur devis</span>
+          <a href="mentions-legales.html">Mentions légales</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      (() => {
+        const SUPPORT_EMAIL = "support@rms-suite.com";
+        const presets = {
+          bug: {
+            subject: "[Support] Bug / erreur",
+            body: `Bonjour équipe support,
+
+Je rencontre un problème technique.
+- Contexte : __
+- Étapes pour reproduire : __
+- Message d'erreur (s'il y en a un) : __
+- Depuis quand : __
+`,
+          },
+          usage: {
+            subject: "[Support] Besoin d'aide à l'utilisation",
+            body: `Bonjour équipe support,
+
+Je souhaiterais de l'aide pour utiliser une fonctionnalité.
+- Ce que je veux faire : __
+- Où je bloque : __
+- Capture d'écran éventuelle : __
+`,
+          },
+          pwa: {
+            subject: "[Support] Installation PWA / A2HS",
+            body: `Bonjour équipe support,
+
+Je souhaite installer l'application sur l'écran d'accueil.
+- Appareil / OS : __
+- Navigateur : __
+- Symptôme (bouton d'installation absent, erreur, etc.) : __
+`,
+          },
+          export: {
+            subject: "[Support] Export / import / sauvegarde",
+            body: `Bonjour équipe support,
+
+J'ai une question/problème sur l'export ou l'import de données.
+- Mode utilisé (JSON, impression, etc.) : __
+- Erreur rencontrée : __
+- Fichier concerné (nom/date) : __
+`,
+          },
+          print: {
+            subject: "[Support] Impression devis/facture ou journal",
+            body: `Bonjour équipe support,
+
+J'ai un souci d'impression.
+- Type de document (journal, devis, facture, pièces) : __
+- Aperçu attendu vs obtenu : __
+- Orientation / marges : __
+`,
+          },
+          calendar: {
+            subject: "[Support] Calendrier / rendez-vous",
+            body: `Bonjour équipe support,
+
+Un problème sur le calendrier ou les fiches rendez-vous.
+- Action effectuée (ajout, suppression, affichage) : __
+- Date concernée : __
+- Détail du blocage : __
+`,
+          },
+          micro: {
+            subject: "[Support] Calcul micro-entreprise / URSSAF",
+            body: `Bonjour équipe support,
+
+Question sur les calculs micro-entreprise.
+- Activité / nature : __
+- Montant concerné : __
+- Ce que j'observe / ce que j'attends : __
+`,
+          },
+          data: {
+            subject: "[Support] Données manquantes ou effacées",
+            body: `Bonjour équipe support,
+
+Des données semblent manquantes.
+- Type de données (recettes, dépenses, clients, devis, etc.) : __
+- Dernière action avant la disparition : __
+- Sauvegarde disponible ? (oui/non) : __
+`,
+          },
+          feature: {
+            subject: "[Support] Suggestion / évolution",
+            body: `Bonjour équipe support,
+
+J'aimerais proposer une évolution.
+- Besoin : __
+- Usage prévu : __
+- Priorité : __
+`,
+          },
+        };
+
+        const formEls = {
+          name: document.getElementById("sup-name"),
+          email: document.getElementById("sup-email"),
+          phone: document.getElementById("sup-phone"),
+          device: document.getElementById("sup-device"),
+          page: document.getElementById("sup-page"),
+          preset: document.getElementById("sup-preset"),
+          subject: document.getElementById("sup-subject"),
+          details: document.getElementById("sup-details"),
+          preview: document.getElementById("sup-preview"),
+          mailto: document.getElementById("sup-mailto"),
+          copy: document.getElementById("sup-copy"),
+        };
+
+        function buildBody() {
+          const preset = presets[formEls.preset.value] || presets.bug;
+          const subject = formEls.subject.value.trim() || preset.subject;
+          const bodyTemplate = preset.body;
+          const details = formEls.details.value.trim() || "__";
+          const meta = `
+Renseignements :
+- Nom / société : ${formEls.name.value || "non fourni"}
+- Email : ${formEls.email.value || "non fourni"}
+- Téléphone : ${formEls.phone.value || "non fourni"}
+- Appareil / navigateur : ${formEls.device.value || "non renseigné"}
+- Page / module concerné : ${formEls.page.value || "non précisé"}
+
+Détails :
+${details}
+
+Pièces jointes recommandées : capture(s) d'écran, export JSON (si pertinent).
+
+Merci,
+${formEls.name.value || ""}`.trim();
+          const finalBody = `${bodyTemplate}\n${meta}\n`;
+          return { subject, body: finalBody };
+        }
+
+        function updatePreview() {
+          const { subject, body } = buildBody();
+          formEls.preview.textContent = `À : ${SUPPORT_EMAIL}\nObjet : ${subject}\n\n${body}`;
+          const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          formEls.mailto.dataset.href = mailto;
+        }
+
+        function applyPreset() {
+          const preset = presets[formEls.preset.value];
+          if (!preset) {
+            formEls.subject.value = "";
+            formEls.details.value = "";
+            updatePreview();
+            return;
+          }
+          formEls.subject.value = preset.subject;
+          formEls.details.value = preset.body.replace(/__/g, "");
+          updatePreview();
+        }
+
+        formEls.preset.addEventListener("change", () => {
+          applyPreset();
+        });
+
+        ["name", "email", "phone", "device", "page", "subject", "details"].forEach((key) => {
+          formEls[key].addEventListener("input", updatePreview);
+        });
+
+        formEls.mailto.addEventListener("click", () => {
+          const href = formEls.mailto.dataset.href;
+          if (href) window.location.href = href;
+        });
+
+        formEls.copy.addEventListener("click", async () => {
+          const { subject, body } = buildBody();
+          const text = `À : ${SUPPORT_EMAIL}\nObjet : ${subject}\n\n${body}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            alert("Message copié dans le presse-papier.");
+          } catch (e) {
+            alert("Impossible de copier automatiquement. Copiez manuellement l'aperçu.");
+          }
+        });
+
+        document.getElementById("sup-reset")?.addEventListener("click", () => {
+          formEls.preset.value = "";
+          formEls.subject.value = "";
+          formEls.details.value = "";
+          updatePreview();
+        });
+
+        // Init
+        updatePreview();
+      })();
+    </script>
+  </body>
+</html>
