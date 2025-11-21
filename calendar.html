@@ -79,6 +79,10 @@
             <label for="event-month">Mois</label>
             <input type="month" id="event-month" />
           </div>
+          <div class="calendar-meta">
+            <span id="event-calendar-date">-</span>
+            <span id="event-calendar-week">-</span>
+          </div>
           <div class="calendar-legend">
             <span class="legend income">Événement</span>
           </div>
@@ -223,19 +227,30 @@
           if (!monthInput.value) monthInput.value = buildMonthString(new Date());
           const { start, days } = buildCalendar(monthInput.value);
           currentMonth = start;
+          const today = new Date();
+          const todayKey = formatDateKey(today);
+          const metaDate = document.getElementById("event-calendar-date");
+          const metaWeek = document.getElementById("event-calendar-week");
+          if (metaDate) metaDate.textContent = `Aujourd'hui : ${formatDateNumeric(today)}`;
+          if (metaWeek) metaWeek.textContent = `Semaine ${getIsoWeek(today)}`;
           const eventsByDay = groupEventsByDay(monthInput.value);
-          container.innerHTML = days
-            .map(({ date, label, inMonth }) => {
-              const iso = toISODate(date);
-              const count = eventsByDay[iso]?.length || 0;
-              return `
-                <button class="calendar-cell ${inMonth ? "" : "inactive"}" data-date="${iso}" aria-label="${label} : ${count} événement(s)">
+          const headers = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+            .map((d) => `<div class="calendar-dayhead">${d}</div>`)
+            .join("");
+          container.innerHTML =
+            headers +
+            days
+              .map(({ label, inMonth, iso }) => {
+                const count = eventsByDay[iso]?.length || 0;
+                const isToday = iso === todayKey;
+                return `
+                <button class="calendar-cell ${inMonth ? "" : "inactive"} ${isToday ? "today" : ""}" data-date="${iso}" aria-label="${label} : ${count} événement(s)">
                   <div>${label}</div>
                   ${count ? `<div class="cell-total" style="color:#16a34a;">${count}</div>` : ""}
                 </button>
               `;
-            })
-            .join("");
+              })
+              .join("");
           container.querySelectorAll("[data-date]").forEach((btn) => {
             btn.addEventListener("click", () => showDayDetail(btn.dataset.date, eventsByDay[btn.dataset.date] || []));
           });
@@ -258,18 +273,16 @@
           const cursor = new Date(start);
           cursor.setDate(cursor.getDate() - offset);
           for (let i = 0; i < 42; i++) {
+            const iso = formatDateKey(cursor);
             days.push({
               date: new Date(cursor),
               label: String(cursor.getDate()).padStart(2, "0"),
+              iso,
               inMonth: cursor >= start && cursor <= end,
             });
             cursor.setDate(cursor.getDate() + 1);
           }
           return { start, days };
-        }
-
-        function toISODate(date) {
-          return date.toISOString().slice(0, 10);
         }
 
         function groupEventsByDay(monthValue) {
@@ -278,7 +291,8 @@
           const month = Number(monthStr);
           return events.reduce((acc, ev) => {
             if (!ev.date) return acc;
-            const d = new Date(ev.date);
+            const d = parseDateKey(ev.date);
+            if (!d) return acc;
             if (d.getFullYear() !== year || d.getMonth() + 1 !== month) return acc;
             const iso = ev.date;
             if (!acc[iso]) acc[iso] = [];
@@ -324,6 +338,23 @@
           notify(String(dayEvents.length || 0));
         }
 
+        function formatDateKey(date) {
+          const d = new Date(date);
+          if (Number.isNaN(d.getTime())) return "";
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        }
+
+        function parseDateKey(value) {
+          const parts = (value || "").split("-");
+          if (parts.length !== 3) return null;
+          const [y, m, d] = parts.map(Number);
+          if (!y || !m || !d) return null;
+          return new Date(y, m - 1, d);
+        }
+
         function findEventIndex(ev) {
           return events.findIndex(
             (item) =>
@@ -349,6 +380,25 @@
           note.textContent = message;
           document.body.appendChild(note);
           setTimeout(() => note.remove(), 2000);
+        }
+
+        function getIsoWeek(date) {
+          const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+          const dayNum = d.getUTCDay() || 7;
+          d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+          const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+          return Math.floor(((d - yearStart) / 86400000 + 1) / 7) + 1;
+        }
+
+        function formatDateNumeric(value) {
+          if (!value) return "-";
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return "-";
+          return new Intl.DateTimeFormat("fr-FR", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          }).format(date);
         }
       })();
     </script>

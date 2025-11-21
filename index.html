@@ -330,11 +330,25 @@
                   <button type="button" class="btn btn-secondary" id="add-income-category">Ajouter</button>
                 </div>
               </div>
+              <div class="form-field inline-field category-manage">
+                <label>Gestion des catégories</label>
+                <div class="row-inline">
+                  <select id="income-category-manage"></select>
+                  <button type="button" class="btn btn-secondary" id="remove-income-category">Supprimer</button>
+                </div>
+              </div>
               <div class="form-field inline-field">
                 <label>Ajouter un moyen de paiement</label>
                 <div class="row-inline">
                   <input type="text" id="new-income-payment-method" placeholder="Ex : Virement" />
                   <button type="button" class="btn btn-secondary" id="add-income-payment">Ajouter</button>
+                </div>
+              </div>
+              <div class="form-field inline-field">
+                <label>Gestion des moyens de paiement</label>
+                <div class="row-inline">
+                  <select id="income-payment-manage"></select>
+                  <button type="button" class="btn btn-secondary" id="remove-income-payment">Supprimer</button>
                 </div>
               </div>
             </div>
@@ -434,11 +448,25 @@
                   <button type="button" class="btn btn-secondary" id="add-expense-category">Ajouter</button>
                 </div>
               </div>
+              <div class="form-field inline-field category-manage">
+                <label>Gestion des catégories</label>
+                <div class="row-inline">
+                  <select id="expense-category-manage"></select>
+                  <button type="button" class="btn btn-secondary" id="remove-expense-category">Supprimer</button>
+                </div>
+              </div>
               <div class="form-field inline-field">
                 <label>Ajouter un moyen de paiement</label>
                 <div class="row-inline">
                   <input type="text" id="new-payment-method" placeholder="Ex : Espèces" />
                   <button type="button" class="btn btn-secondary" id="add-payment-method">Ajouter</button>
+                </div>
+              </div>
+              <div class="form-field inline-field">
+                <label>Gestion des moyens de paiement</label>
+                <div class="row-inline">
+                  <select id="expense-payment-manage"></select>
+                  <button type="button" class="btn btn-secondary" id="remove-expense-payment">Supprimer</button>
                 </div>
               </div>
             </div>
@@ -838,6 +866,10 @@
             <div class="form-field">
               <label>Mois</label>
               <input type="month" id="expense-month" />
+            </div>
+            <div class="calendar-meta">
+              <span id="calendar-current-date">-</span>
+              <span id="calendar-current-week">-</span>
             </div>
             <div class="calendar-legend">
               <span class="legend income">Recettes</span>

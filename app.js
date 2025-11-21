@@ -99,6 +99,31 @@
     }).format(date);
   }
 
+  function formatDateKey(date) {
+    const d = new Date(date);
+    if (Number.isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function parseDateKey(value) {
+    const parts = (value || "").split("-");
+    if (parts.length !== 3) return null;
+    const [y, m, d] = parts.map((v) => Number(v));
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d);
+  }
+
+  function getIsoWeek(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.floor(((d - yearStart) / 86400000 + 1) / 7) + 1;
+  }
+
   function isPaid(status) {
     if (!status) return true;
     const value = String(status).toLowerCase();
@@ -574,6 +599,8 @@
     document
       .querySelectorAll('#expense-form [data-field="category"]')
       .forEach((select) => fillCategories(select, expenseCats));
+    fillPaymentManagerSelect("income-payment-manage", methods);
+    fillPaymentManagerSelect("expense-payment-manage", methods);
 
     const incomeActivity = document.getElementById("income-activity-select");
     if (incomeActivity) {
@@ -626,6 +653,8 @@
       });
       docActivity.value = current || "liberal";
     }
+    fillCategoryManagerSelect("income-category-manage", incomeCats);
+    fillCategoryManagerSelect("expense-category-manage", expenseCats);
   }
 
   function fillCategories(select, categories = []) {
@@ -644,6 +673,46 @@
       select.appendChild(opt);
     });
     if (current && source.includes(current)) {
+      select.value = current;
+    }
+  }
+
+  function fillCategoryManagerSelect(selectId, categories = []) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    const current = select.value;
+    select.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "-- Choisir une catégorie --";
+    select.appendChild(placeholder);
+    categories.forEach((category) => {
+      const opt = document.createElement("option");
+      opt.value = category;
+      opt.textContent = category;
+      select.appendChild(opt);
+    });
+    if (current && categories.includes(current)) {
+      select.value = current;
+    }
+  }
+
+  function fillPaymentManagerSelect(selectId, methods = []) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    const current = select.value;
+    select.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "-- Choisir un moyen --";
+    select.appendChild(placeholder);
+    methods.forEach((method) => {
+      const opt = document.createElement("option");
+      opt.value = method;
+      opt.textContent = method;
+      select.appendChild(opt);
+    });
+    if (current && methods.includes(current)) {
       select.value = current;
     }
   }
@@ -684,6 +753,48 @@
     saveState();
   }
 
+  function removeCategoryFromEntries(type, category) {
+    if (!category) return;
+    state.entries = state.entries.map((entry) => {
+      if (entry.type === type && entry.category === category) {
+        return { ...entry, category: "" };
+      }
+      return entry;
+    });
+  }
+
+  function removeExpenseCategory(value) {
+    const trimmed = (value || "").trim();
+    if (!trimmed) return;
+    const inUse = state.entries.some((entry) => entry.type === "expense" && entry.category === trimmed);
+    const shouldDelete = confirm(
+      inUse
+        ? `La catégorie "${trimmed}" est utilisée dans vos dépenses. La supprimer ? Les lignes liées seront vidées.`
+        : `Supprimer la catégorie "${trimmed}" ?`
+    );
+    if (!shouldDelete) return;
+    state.meta.expenseCategories = (state.meta.expenseCategories || []).filter((cat) => cat !== trimmed);
+    removeCategoryFromEntries("expense", trimmed);
+    fillAccountingSelectors();
+    saveState();
+  }
+
+  function removeIncomeCategory(value) {
+    const trimmed = (value || "").trim();
+    if (!trimmed) return;
+    const inUse = state.entries.some((entry) => entry.type === "income" && entry.category === trimmed);
+    const shouldDelete = confirm(
+      inUse
+        ? `La catégorie "${trimmed}" est utilisée dans vos recettes. La supprimer ? Les lignes liées seront vidées.`
+        : `Supprimer la catégorie "${trimmed}" ?`
+    );
+    if (!shouldDelete) return;
+    state.meta.incomeCategories = (state.meta.incomeCategories || []).filter((cat) => cat !== trimmed);
+    removeCategoryFromEntries("income", trimmed);
+    fillAccountingSelectors();
+    saveState();
+  }
+
   function addPaymentMethod(value) {
     const trimmed = (value || "").trim();
     if (!trimmed) return;
@@ -692,6 +803,24 @@
       fillAccountingSelectors();
       saveState();
     }
+  }
+
+  function removePaymentMethod(value) {
+    const trimmed = (value || "").trim();
+    if (!trimmed) return;
+    const inUse = state.entries.some((entry) => entry.paymentMethod === trimmed);
+    const shouldDelete = confirm(
+      inUse
+        ? `Le moyen de paiement "${trimmed}" est utilisé dans vos enregistrements. Le supprimer ? Les lignes liées seront vidées.`
+        : `Supprimer le moyen de paiement "${trimmed}" ?`
+    );
+    if (!shouldDelete) return;
+    state.meta.paymentMethods = (state.meta.paymentMethods || []).filter((method) => method !== trimmed);
+    state.entries = state.entries.map((entry) =>
+      entry.paymentMethod === trimmed ? { ...entry, paymentMethod: "" } : entry
+    );
+    fillAccountingSelectors();
+    saveState();
   }
 
   // -----------------------------
@@ -1961,6 +2090,12 @@
     const monthInput = document.getElementById("expense-month");
     const monthValue = monthInput?.value || buildMonthString(new Date());
     if (monthInput && !monthInput.value) monthInput.value = monthValue;
+    const today = new Date();
+    const todayKey = formatDateKey(today);
+    const weekSpan = document.getElementById("calendar-current-week");
+    const dateSpan = document.getElementById("calendar-current-date");
+    if (dateSpan) dateSpan.textContent = `Aujourd'hui : ${formatDateNumeric(today)}`;
+    if (weekSpan) weekSpan.textContent = `Semaine ${getIsoWeek(today)}`;
     const { start, end } = getMonthRange(monthValue);
     const days = [];
     const firstDay = new Date(start);
@@ -1973,10 +2108,14 @@
     }
     const expenses = state.entries.filter((e) => e.type === "expense");
     const incomes = state.entries.filter((e) => e.type === "income");
-    container.innerHTML = days
+    const dayHeads = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+      .map((d) => `<div class="calendar-dayhead">${d}</div>`)
+      .join("");
+    const cells = days
       .map((date) => {
         const inMonth = date >= start && date <= end;
-        const iso = date.toISOString().slice(0, 10);
+        const iso = formatDateKey(date);
+        const isToday = iso === todayKey;
         const totalExpense = expenses
           .filter((e) => e.date === iso)
           .reduce((acc, e) => acc + computeEntryAmounts(e).amountTTC, 0);
@@ -1984,7 +2123,7 @@
           .filter((e) => e.date === iso)
           .reduce((acc, e) => acc + computeEntryAmounts(e).amountTTC, 0);
         return `
-          <div class="calendar-cell ${inMonth ? "" : "inactive"}">
+          <div class="calendar-cell ${inMonth ? "" : "inactive"} ${isToday ? "today" : ""}">
             <div>${String(date.getDate()).padStart(2, "0")}</div>
             <div class="cell-total" style="color:#dc2626;">${totalExpense ? formatCurrency(totalExpense) : ""}</div>
             <div class="cell-total" style="color:#16a34a;">${totalIncome ? formatCurrency(totalIncome) : ""}</div>
@@ -1992,6 +2131,7 @@
         `;
       })
       .join("");
+    container.innerHTML = `${dayHeads}${cells}`;
   }
 
   function buildMonthString(date) {
@@ -2592,6 +2732,22 @@
     });
     document.getElementById("add-income-payment")?.addEventListener("click", () => {
       addPaymentMethod(document.getElementById("new-income-payment-method")?.value);
+    });
+    document.getElementById("remove-income-category")?.addEventListener("click", () => {
+      const value = document.getElementById("income-category-manage")?.value;
+      removeIncomeCategory(value);
+    });
+    document.getElementById("remove-expense-category")?.addEventListener("click", () => {
+      const value = document.getElementById("expense-category-manage")?.value;
+      removeExpenseCategory(value);
+    });
+    document.getElementById("remove-income-payment")?.addEventListener("click", () => {
+      const value = document.getElementById("income-payment-manage")?.value;
+      removePaymentMethod(value);
+    });
+    document.getElementById("remove-expense-payment")?.addEventListener("click", () => {
+      const value = document.getElementById("expense-payment-manage")?.value;
+      removePaymentMethod(value);
     });
 
     document.addEventListener("beforeprint", () => {
