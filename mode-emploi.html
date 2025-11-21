@@ -8,6 +8,23 @@
     <script src="page-transition.js" defer></script>
   </head>
   <body>
+    <nav class="top-nav">
+      <div class="top-nav-brand">
+        <img src="logoOfficielRMS.svg" alt="Logo RMS" class="top-nav-logo" />
+        <span>RMS Suite</span>
+      </div>
+      <button class="top-nav-toggle" id="top-nav-toggle" aria-label="Ouvrir le menu">
+        <span class="burger-lines" aria-hidden="true"></span>
+      </button>
+      <div class="top-nav-links" id="top-nav-links">
+        <a href="index.html#info-dossier">Logiciel comptable</a>
+        <a href="calendar.html">Calendrier</a>
+        <a href="contacts.html">Gérez vos contacts</a>
+        <a href="support.html">Contact support</a>
+        <a href="artisan.html">Offre services digitaux</a>
+        <a href="mode-emploi.html">Mode d'emploi</a>
+      </div>
+    </nav>
     <div class="app">
       <header class="site-header guide-hero">
         <div class="guide-hero-text">
@@ -202,6 +219,25 @@
         </div>
       </section>
     </div>
+
+    <script>
+      (() => {
+        const toggle = document.getElementById("top-nav-toggle");
+        const links = document.getElementById("top-nav-links");
+        if (!toggle || !links) return;
+        toggle.addEventListener("click", () => {
+          links.classList.toggle("open");
+          toggle.classList.toggle("is-open");
+        });
+        links.querySelectorAll("a").forEach((a) =>
+          a.addEventListener("click", () => {
+            links.classList.remove("open");
+            toggle.classList.remove("is-open");
+          })
+        );
+      })();
+    </script>
+    <div class="page-transition" id="page-transition"></div>
 
     <footer class="site-footer">
       <div class="footer-content">

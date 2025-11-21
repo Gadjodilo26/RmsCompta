@@ -12,22 +12,24 @@
     <script src="app.js" defer></script>
   </head>
   <body>
+    <nav class="top-nav">
+      <div class="top-nav-brand">
+        <img src="logoOfficielRMS.svg" alt="Logo RMS" class="top-nav-logo" />
+        <span>RMS Suite</span>
+      </div>
+      <button class="top-nav-toggle" id="top-nav-toggle" aria-label="Ouvrir le menu">
+        <span class="burger-lines" aria-hidden="true"></span>
+      </button>
+      <div class="top-nav-links" id="top-nav-links">
+        <a href="#info-dossier">Logiciel comptable</a>
+        <a href="calendar.html">Calendrier</a>
+        <a href="contacts.html">Gérez vos contacts</a>
+        <a href="support.html">Contact support</a>
+        <a href="artisan.html">Offre services digitaux</a>
+        <a href="mode-emploi.html">Mode d'emploi</a>
+      </div>
+    </nav>
     <div class="app">
-      <nav class="top-nav">
-        <div class="top-nav-brand">
-          <img src="logoOfficielRMS.svg" alt="Logo RMS" class="top-nav-logo" />
-          <span>RMS Suite</span>
-        </div>
-        <button class="top-nav-toggle" id="top-nav-toggle" aria-label="Ouvrir le menu">☰</button>
-        <div class="top-nav-links" id="top-nav-links">
-          <a href="#info-dossier">Logiciel comptable</a>
-          <a href="calendar.html">Calendrier</a>
-          <a href="contacts.html">Gérez vos contacts</a>
-          <a href="support.html">Contact support</a>
-          <a href="artisan.html">Offre services digitaux</a>
-          <a href="mode-emploi.html">Mode d'emploi</a>
-        </div>
-      </nav>
       <div class="app-shell">
         <aside class="sidebar" aria-label="Navigation application">
           <div class="sidebar-header">
@@ -190,7 +192,11 @@
           </section>
 
           <section class="meta-card">
-            <h2>Coordonnées entreprise</h2>
+            <h2><span class="data-star">*</span>Coordonnées entreprise</h2>
+            <p class="data-note">
+              <span class="data-star">*</span>
+              Saisie locale uniquement : les informations d’entreprise restent dans votre navigateur, non transmises ni visibles par d’autres utilisateurs.
+            </p>
             <div class="meta-grid">
               <div class="form-field">
                 <label for="company-legal-name">Dénomination</label>
@@ -320,7 +326,11 @@
         </section>
 
         <section class="panel" data-panel="recettes">
-          <h2 class="day-title" data-text-key="tabs.incomes">Recettes</h2>
+          <h2 class="day-title" data-text-key="tabs.incomes"><span class="data-star">*</span>Recettes</h2>
+          <p class="data-note">
+            <span class="data-star">*</span>
+            Les montants et paiements restent stockés localement dans votre navigateur ; rien n’est envoyé au serveur.
+          </p>
           <div class="panel-content form-stack">
             <div class="inline-actions">
               <div class="form-field inline-field">
@@ -438,7 +448,11 @@
         </section>
 
         <section class="panel" data-panel="depenses">
-          <h2 class="day-title" data-text-key="tabs.expenses">Dépenses</h2>
+          <h2 class="day-title" data-text-key="tabs.expenses"><span class="data-star">*</span>Dépenses</h2>
+          <p class="data-note">
+            <span class="data-star">*</span>
+            Les dépenses sont conservées uniquement sur votre appareil, site statique sans collecte distante.
+          </p>
           <div class="panel-content form-stack">
             <div class="inline-actions">
               <div class="form-field inline-field">
@@ -552,7 +566,11 @@
         </section>
 
         <section class="panel" data-panel="clients">
-          <h2 class="day-title" data-text-key="tabs.clients">Clients</h2>
+          <h2 class="day-title" data-text-key="tabs.clients"><span class="data-star">*</span>Clients</h2>
+          <p class="data-note">
+            <span class="data-star">*</span>
+            Les coordonnées clients restent sur votre navigateur : aucune synchronisation ni visibilité externe.
+          </p>
           <div class="panel-content form-stack">
             <form id="client-form" class="contact-form" data-contact-type="client">
               <div class="form-grid">
@@ -600,7 +618,11 @@
         </section>
 
         <section class="panel" data-panel="fournisseurs">
-          <h2 class="day-title" data-text-key="tabs.fournisseurs">Fournisseurs</h2>
+          <h2 class="day-title" data-text-key="tabs.fournisseurs"><span class="data-star">*</span>Fournisseurs</h2>
+          <p class="data-note">
+            <span class="data-star">*</span>
+            Les données fournisseurs sont stockées localement dans votre navigateur uniquement.
+          </p>
             <div class="panel-content form-stack">
               <form id="fournisseur-form" class="contact-form" data-contact-type="fournisseur">
                 <div class="form-grid">
@@ -648,7 +670,11 @@
         </section>
 
         <section class="panel" data-panel="pieces">
-          <h2 class="day-title" data-text-key="tabs.pieces">Pièces justificatives</h2>
+          <h2 class="day-title" data-text-key="tabs.pieces"><span class="data-star">*</span>Pièces justificatives</h2>
+          <p class="data-note">
+            <span class="data-star">*</span>
+            Les images et pièces restent sur votre appareil ; ce site statique ne transmet rien à un serveur ni à d’autres utilisateurs.
+          </p>
           <div class="panel-content">
             <p class="fuel-info">
               Importez vos factures, tickets ou reçus. Les images sont compressées pour rester légères dans le stockage local.
@@ -702,7 +728,11 @@
         </section>
 
         <section class="panel" data-panel="documents">
-          <h2 class="day-title">Devis & factures</h2>
+          <h2 class="day-title"><span class="data-star">*</span>Devis & factures</h2>
+          <p class="data-note">
+            <span class="data-star">*</span>
+            Les devis et factures restent enregistrés localement dans votre navigateur ; aucune collecte ni partage automatique.
+          </p>
           <div class="panel-content form-stack">
             <form id="doc-form" class="entry-form">
               <div class="form-grid">
@@ -880,7 +910,11 @@
         </section>
 
         <section class="panel" data-panel="micro">
-          <h2 class="day-title">Micro-entreprise</h2>
+          <h2 class="day-title"><span class="data-star">*</span>Micro-entreprise</h2>
+          <p class="data-note">
+            <span class="data-star">*</span>
+            Les simulations et versements URSSAF restent locaux : aucune donnée envoyée en ligne ni visible ailleurs.
+          </p>
           <div class="panel-content">
             <div class="form-grid">
               <div class="form-field">

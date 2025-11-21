@@ -2356,9 +2356,13 @@
     if (!toggle || !links) return;
     toggle.addEventListener("click", () => {
       links.classList.toggle("open");
+      toggle.classList.toggle("is-open");
     });
     links.querySelectorAll("a").forEach((a) => {
-      a.addEventListener("click", () => links.classList.remove("open"));
+      a.addEventListener("click", () => {
+        links.classList.remove("open");
+        toggle.classList.remove("is-open");
+      });
     });
   }
 

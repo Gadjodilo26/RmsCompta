@@ -4,6 +4,21 @@
   // Flag lu par app.js pour ne pas doubler les listeners.
   window.GLOBAL_PAGE_TRANSITION = true;
 
+  function setActiveTopNavLinks() {
+    const links = document.querySelectorAll(".top-nav-links a[href]");
+    if (!links.length) return;
+    const path = (window.location.pathname.split("/").pop() || "index.html") || "index.html";
+    links.forEach((link) => {
+      const href = link.getAttribute("href") || "";
+      const target = href.split("#")[0] || "";
+      const isIndexLink = !target || target === "index.html";
+      const matches = (isIndexLink && (path === "" || path === "index.html")) || target === path;
+      if (matches) {
+        link.classList.add("active");
+      }
+    });
+  }
+
   function ensureOverlay() {
     let overlay = document.getElementById("page-transition");
     if (!overlay) {
@@ -26,6 +41,7 @@
 
   function attachTransitions() {
     const overlay = ensureOverlay();
+    setActiveTopNavLinks();
 
     document.addEventListener("click", (event) => {
       const link = event.target.closest("a[href]");

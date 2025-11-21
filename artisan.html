@@ -8,6 +8,23 @@
     <script src="page-transition.js" defer></script>
   </head>
   <body>
+    <nav class="top-nav">
+      <div class="top-nav-brand">
+        <img src="logoOfficielRMS.svg" alt="Logo RMS" class="top-nav-logo" />
+        <span>RMS Suite</span>
+      </div>
+      <button class="top-nav-toggle" id="top-nav-toggle" aria-label="Ouvrir le menu">
+        <span class="burger-lines" aria-hidden="true"></span>
+      </button>
+      <div class="top-nav-links" id="top-nav-links">
+        <a href="index.html#info-dossier">Logiciel comptable</a>
+        <a href="calendar.html">Calendrier</a>
+        <a href="contacts.html">Gérez vos contacts</a>
+        <a href="support.html">Contact support</a>
+        <a href="artisan.html">Offre services digitaux</a>
+        <a href="mode-emploi.html">Mode d'emploi</a>
+      </div>
+    </nav>
     <div class="app">
       <header class="site-header">
         <img src="logoOfficielRMS.svg" alt="Logo" class="site-logo" />
@@ -25,7 +42,7 @@
           téléphonique (prestation payante) afin de choisir l'intégration la plus simple et la plus rentable.
         </p>
         <div class="file-actions" style="margin-top:12px;">
-          <a class="btn btn-secondary" href="index.html">Retour tableau de bord</a>
+          <a class="btn btn-primary" href="index.html">Retour tableau de bord</a>
         </div>
       </section>
 
@@ -58,7 +75,11 @@
       </section>
 
       <section class="panel active">
-        <h2 class="day-title">Demande de site / prestation</h2>
+        <h2 class="day-title"><span class="data-star">*</span>Demande de site / prestation</h2>
+        <p class="data-note">
+          <span class="data-star">*</span>
+          Données saisies uniquement dans votre navigateur (site statique) : rien n’est envoyé vers un serveur ou partagé.
+        </p>
         <form id="artisan-form" class="entry-form">
           <div class="form-grid">
             <div class="form-field">
@@ -132,13 +153,6 @@
         </div>
       </section>
     </div>
-
-    <footer class="site-footer">
-      <div class="footer-content">
-        <span id="footer-text">Compta locale — RMS Suite</span>
-        <img id="footer-logo" src="logo-footer-placeholder.svg" alt="Logo du partenaire" />
-      </div>
-    </footer>
 
     <script>
       (() => {
@@ -215,9 +229,30 @@ ${els.name.value || ""}`;
           setTimeout(updatePreview, 0);
         });
 
+        const footerYear = document.getElementById("footer-year");
+        if (footerYear) footerYear.textContent = new Date().getFullYear();
+
         updatePreview();
       })();
     </script>
+    <script>
+      (() => {
+        const toggle = document.getElementById("top-nav-toggle");
+        const links = document.getElementById("top-nav-links");
+        if (!toggle || !links) return;
+        toggle.addEventListener("click", () => {
+          links.classList.toggle("open");
+          toggle.classList.toggle("is-open");
+        });
+        links.querySelectorAll("a").forEach((a) =>
+          a.addEventListener("click", () => {
+            links.classList.remove("open");
+            toggle.classList.remove("is-open");
+          })
+        );
+      })();
+    </script>
+    <div class="page-transition" id="page-transition"></div>
 
     <footer class="site-footer">
       <div class="footer-content">
@@ -225,7 +260,7 @@ ${els.name.value || ""}`;
           <img id="footer-logo" src="logoOfficielRMS.svg" alt="Logo RMS" />
           <div class="footer-texts">
             <span id="footer-text">RMS Micro-entreprise — Compta locale</span>
-            <span id="footer-copy">© <script>document.write(new Date().getFullYear());</script> RMS Suite</span>
+            <span id="footer-copyright">© <span id="footer-year"></span> RMS Suite</span>
           </div>
         </div>
         <div class="footer-legal">
